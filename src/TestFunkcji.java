@@ -25,7 +25,7 @@ public class TestFunkcji {
 	private static AzButton BExit, BTest, BTest2;
 		
 	private static void createFrame() {
-		AzFrame NoweOkienko = new AzFrame("Jakieœ Okienko",400,800);
+		AzFrame NoweOkienko = new AzFrame("Jakieœ Okienko",800,1200);
 		
 		BExit = new AzButton("Wyjœcie",30,60,100,20);
 		BTest = new AzButton("Lista Prev",30,90,100,20);
@@ -34,11 +34,6 @@ public class TestFunkcji {
 		AzLabel LPole = new AzLabel("Jakiœ tekst",30,120,100,20);
 		
 		AzTextField PoleTekstowe = new AzTextField("",150,30,100,20);
-		
-		String[] ListaNumerowana = new String[3];
-		ListaNumerowana[0] = "Opcja 1";
-		ListaNumerowana[1] = "Opcja 2";
-		ListaNumerowana[2] = "Opcja 3";
 
 		Set<Component> ButtonsSet = new HashSet<Component>();
 		ButtonsSet.add(BExit);
@@ -49,9 +44,6 @@ public class TestFunkcji {
 		
 		NoweOkienko.add(LPole);
 		NoweOkienko.add(PoleTekstowe);
-		
-		AzRadioButtonGroup Grupa1 = new AzRadioButtonGroup(ListaNumerowana,2);
-		NoweOkienko.add(Grupa1);
 		
 		Integer PunktID = 5;
 		String PunktNazwa = "NowyElement";
@@ -64,9 +56,14 @@ public class TestFunkcji {
 		CPMActivity TestowaAkcja = new CPMActivity(PunktID, PunktNazwa);
 		
 		TestowaAkcja.addPrevActionFromString(PunktLista);
-		TestowaAkcja.addPrevAction(5);
 		TestowaAkcja.removePrevAction(1);
 		TestowaAkcja.addNextActionFromIndex(2,WymaganeLista);
+		
+		String[] TimeMethodStringList = {"sekundy","minuty","godziny","dni"};
+		
+		AzRadioButtonGroup ChooseTimeMethodGroup = new AzRadioButtonGroup(TimeMethodStringList,2);
+		ChooseTimeMethodGroup.setBounds(200,100,100,100);
+		NoweOkienko.add(ChooseTimeMethodGroup);
 		
 		//Konfiguracja GIU wpisywania wartoœci
 		JPanel InputPane = new JPanel();
@@ -100,7 +97,9 @@ public class TestFunkcji {
 		AddingActionButton.addActionListener(e -> {
 			CPMActivity NewActivity = new CPMActivity(Integer.parseInt(IdTextField.getText()),NameTextField.getText());
 			
-			// Duration.ofSeconds(Integer.parseInt(TimeTextField.getText()));
+			if (ChooseTimeMethodGroup.isButtonSelected(0)) {
+				NewActivity.setTime(Duration.ofSeconds(Integer.parseInt(TimeTextField.getText())));
+			}
 
 			ActionList.add(NewActivity);
 			System.out.println(ActionList);
@@ -109,11 +108,12 @@ public class TestFunkcji {
 		
 		//
 		
-		
-		
-		
 		BTest.addActionListener(e -> {
 			System.out.println(TestowaAkcja.getPrevList());
+		});
+		
+		BTest2.addActionListener(e -> {
+			System.out.println(TestowaAkcja.getNextList());
 		});
 		
 		//Tablica do wyœwietlania
@@ -121,12 +121,12 @@ public class TestFunkcji {
         String[] columnNames = {"Id","Name","Time","PrevList","NextList","Reserve","IsCrytical"};
         
         Object[][] data = {
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
+	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
+	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
+	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
+	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
+	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
+	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
         };
 		
         JTable table = new JTable(data, columnNames);
@@ -134,30 +134,18 @@ public class TestFunkcji {
         table.setFillsViewportHeight(true);
         
         JScrollPane tablePane = new JScrollPane(table);
-        tablePane.setBounds(10,500,500,70);
+        tablePane.setBounds(30,300,500,70);
         
         NoweOkienko.add(tablePane);
-
-		
-		Grupa1.getRadioButton(0).addActionListener(e -> System.out.println("Pierwsze dzia³a"));
-		Grupa1.getRadioButton(1).addActionListener(e -> System.out.println("Drugie dzia³a"));
-		Grupa1.getRadioButton(2).addActionListener(e -> System.out.println("Trzecie dzia³a"));
 	
 		new AzBasicEvent().performDialogExitFromButton(BExit,NoweOkienko);
 		new AzBasicEvent().performDialogExitFromX(NoweOkienko);
-
-		BTest2.addActionListener(e -> {
-			TestowaAkcja.addPrevAction(15);
-			tablePane.repaint();
-		});
 		
 		NoweOkienko.setLocationRelativeTo(null);
 		NoweOkienko.setVisible(true);
 		
 		NoweOkienko.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	}
-	
-	
 	
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {

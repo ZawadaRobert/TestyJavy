@@ -146,6 +146,6 @@ public class CPMActivity {
 	}
 	
 	public String toString() {
-		return(this.id+" "+this.name);
+		return("Id: "+id+", "+name+" o czasie "+time);
 	}
 }

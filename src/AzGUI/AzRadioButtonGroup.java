@@ -1,4 +1,6 @@
 package AzGUI;
+import java.awt.Component;
+
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
