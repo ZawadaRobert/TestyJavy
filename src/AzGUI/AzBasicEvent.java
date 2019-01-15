@@ -24,7 +24,7 @@ public class AzBasicEvent {
 		});
 	}
 	
-	public void eventDialogExit (JFrame frame) {
+	public static void eventDialogExit (JFrame frame) {
 		
 		Object message = "Czy na pewno chcesz zakoñczyæ dzia³anie programu?";
 		String title = "PotwierdŸ";
@@ -37,5 +37,3 @@ public class AzBasicEvent {
 		if (confirm == 0) System.exit(0);
 	}
 }
-
-

@@ -13,10 +13,9 @@ public class CPMActivity {
 	private Set<Integer> prevList, nextList;
 	
 	
-	public CPMActivity (Integer id, String name, Duration time) {
-		this.id=id;
+	public CPMActivity (Integer id, String name) {
+		this.setId(id);
 		this.setName(name);
-		this.setTime(time);
 		this.prevList = new HashSet<Integer>();
 		this.nextList = new HashSet<Integer>();
 	}
@@ -144,5 +143,9 @@ public class CPMActivity {
 
 	public void setnextList(Set<Integer> nextList) {
 		this.nextList = nextList;
+	}
+	
+	public String toString() {
+		return(this.id+" "+this.name);
 	}
 }
