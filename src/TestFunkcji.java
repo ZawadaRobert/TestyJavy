@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
 
 import AzGUI.*;
 
@@ -94,16 +95,7 @@ public class TestFunkcji {
 		
 		Set<CPMActivity> ActionList = new HashSet<CPMActivity>();
 			
-		AddingActionButton.addActionListener(e -> {
-			CPMActivity NewActivity = new CPMActivity(Integer.parseInt(IdTextField.getText()),NameTextField.getText());
-			
-			if (ChooseTimeMethodGroup.isButtonSelected(0)) {
-				NewActivity.setTime(Duration.ofSeconds(Integer.parseInt(TimeTextField.getText())));
-			}
 
-			ActionList.add(NewActivity);
-			System.out.println(ActionList);
-		});
 		
 		
 		//
@@ -118,25 +110,56 @@ public class TestFunkcji {
 		
 		//Tablica do wyœwietlania
 		
+		ActionList.add(TestowaAkcja);
+		
+		int actionListSize = ActionList.size();
+		
         String[] columnNames = {"Id","Name","Time","PrevList","NextList","Reserve","IsCrytical"};
         
-        Object[][] data = {
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-	    {TestowaAkcja.getId(), TestowaAkcja.getName(),TestowaAkcja.getTime().getSeconds(),TestowaAkcja.getPrevList(),TestowaAkcja.getNextList(),TestowaAkcja.getReserve(),TestowaAkcja.isCrytical()},
-        };
+        Object[][] data = {};
+        
+        for (CPMActivity obj : ActionList) {
+        	Object[] array = obj.getArrayRow();
+        	
+        }      
 		
-        JTable table = new JTable(data, columnNames);
+        DefaultTableModel model = new DefaultTableModel(); 
+        
+        JTable table = new JTable(model);
+        
+
+        
+        
+        
+        
+        for (String l : columnNames) {
+            model.addColumn(l);
+        }
+        
+        
+        model.addRow(TestowaAkcja.getArrayRow());
+       
+		AddingActionButton.addActionListener(e -> {
+			CPMActivity NewActivity = new CPMActivity(Integer.parseInt(IdTextField.getText()),NameTextField.getText());
+			
+			if (ChooseTimeMethodGroup.isButtonSelected(0)) {
+				NewActivity.setTime(Duration.ofSeconds(Integer.parseInt(TimeTextField.getText())));
+			}
+
+			ActionList.add(NewActivity);
+			model.addRow(NewActivity.getArrayRow());
+			System.out.println(ActionList);
+		});
+        
+        
         table.setPreferredScrollableViewportSize(new Dimension(500, 70));
         table.setFillsViewportHeight(true);
         
-        JScrollPane tablePane = new JScrollPane(table);
-        tablePane.setBounds(30,300,500,70);
+        JScrollPane TablePane = new JScrollPane(table);
+        TablePane.setBounds(30,300,500,70);
+        table.setEnabled(false);
         
-        NoweOkienko.add(tablePane);
+        NoweOkienko.add(TablePane);
 	
 		new AzBasicEvent().performDialogExitFromButton(BExit,NoweOkienko);
 		new AzBasicEvent().performDialogExitFromX(NoweOkienko);

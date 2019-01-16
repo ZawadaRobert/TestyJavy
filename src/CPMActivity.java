@@ -56,21 +56,23 @@ public class CPMActivity {
 			}
 		}
 	
-	public void calculateStart () {
-		this.lateStart=this.earlyStart.plus(this.time);
-	}
+	public void calculateEarlyFinish () {
+		this.earlyFinish=this.earlyStart.plus(this.time);
+	}	
 	
-	public void calculateFinish () {
-		this.earlyFinish=this.lateFinish.minus(this.time);
+	public void calculateLateStart () {
+		this.lateStart=this.lateFinish.minus(this.time);
 	}
 	
 	public void calculateReserve () {
 		this.reserve=this.lateStart.minus(this.earlyStart);
-	}
-	
-	public void calculateCrytical () {
 		if (this.reserve.isZero()) this.crytical=true;
 		else this.crytical=false;
+	}
+	
+	public Object[] getArrayRow() {
+		Object[] array = {this.getId(),this.getName(),this.getTime(),this.getPrevList(),this.getNextList(),this.getReserve(),this.isCrytical()};
+		return array;
 	}
 
 	public Integer getId() {
