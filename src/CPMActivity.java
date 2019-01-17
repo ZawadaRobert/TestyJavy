@@ -169,7 +169,5 @@ public class CPMActivity {
 	        return false;
 	    CPMActivity activity = (CPMActivity) obj;
 	    return Objects.equals(id, activity.id);
-
-
 	}
 }

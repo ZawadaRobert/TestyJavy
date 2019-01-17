@@ -33,8 +33,6 @@ public class TestFunkcji {
 		BTest2 = new AzButton("Lista Next",30,120,100,20);
 	
 		AzLabel LPole = new AzLabel("Jakiœ tekst",30,120,100,20);
-		
-		AzTextField PoleTekstowe = new AzTextField("",150,30,100,20);
 
 		Set<Component> ButtonsSet = new HashSet<Component>();
 		ButtonsSet.add(BExit);
@@ -44,7 +42,6 @@ public class TestFunkcji {
 		NoweOkienko.addAll(ButtonsSet);
 		
 		NoweOkienko.add(LPole);
-		NoweOkienko.add(PoleTekstowe);
 		
 		Integer PunktID = 5;
 		String PunktNazwa = "NowyElement";
@@ -66,37 +63,53 @@ public class TestFunkcji {
 		ChooseTimeMethodGroup.setBounds(200,100,100,100);
 		NoweOkienko.add(ChooseTimeMethodGroup);
 		
-		//Konfiguracja GIU wpisywania wartoœci
-		JPanel InputPane = new JPanel();
-		InputPane.setLayout(new GridLayout(1,5));
-		InputPane.setSize(400,20);
+		class InputPane extends JPanel {
 		
-		JTextField IdTextField = new JTextField("Id");
-		IdTextField.setSize(40,20);
-		InputPane.add(IdTextField);
-		
-		JTextField NameTextField = new JTextField("Name");
-		NameTextField.setSize(120,20);
-		InputPane.add(NameTextField);
-		
-		JTextField TimeTextField = new JTextField("Time");
-		TimeTextField.setSize(120,20);
-		InputPane.add(TimeTextField);
-		
-		JTextField PrevActionTextField = new JTextField("PrevAction");
-		PrevActionTextField.setSize(120,20);
-		InputPane.add(PrevActionTextField);
-		
-		JButton AddingActionButton = new JButton("Dodaj");
-		AddingActionButton.setSize(120,20);
-		InputPane.add(AddingActionButton);
-		
-		NoweOkienko.add(InputPane);
-		
-		Set<CPMActivity> ActionList = new HashSet<CPMActivity>();
+			private JTextField IdTextField, NameTextField, TimeTextField, PrevActionTextField;
+			private JButton AddingActionButton;
 			
-
+			public InputPane() {
+				setLayout(new GridLayout(1,5));
+				setSize(400,20);
 		
+				IdTextField = new JTextField("Id");
+				IdTextField.setSize(40,20);
+				add(IdTextField);
+		
+				NameTextField = new JTextField("Name");
+				NameTextField.setSize(120,20);
+				add(NameTextField);
+		
+				TimeTextField = new JTextField("Time");
+				TimeTextField.setSize(120,20);
+				add(TimeTextField);
+		
+				PrevActionTextField = new JTextField("PrevAction");
+				PrevActionTextField.setSize(120,20);
+				add(PrevActionTextField);
+		
+				AddingActionButton = new JButton("Dodaj");
+				AddingActionButton.setSize(120,20);
+				add(AddingActionButton);			
+			}
+			
+			public JButton getAddingActionButton() {
+				return this.AddingActionButton;
+			}
+			
+			public CPMActivity getNewActivity() {
+				CPMActivity newActivity = new CPMActivity(Integer.parseInt(IdTextField.getText()),NameTextField.getText());
+				newActivity.setTime(Duration.ofSeconds(Integer.parseInt(TimeTextField.getText())));
+				newActivity.addPrevActionFromString(PrevActionTextField.getText());
+				return newActivity;
+			}
+				
+		}
+		
+		InputPane inputPane = new InputPane();
+		NoweOkienko.add(inputPane);
+		
+		Set<CPMActivity> ActivityList = new HashSet<CPMActivity>();
 		
 		//
 		
@@ -110,45 +123,39 @@ public class TestFunkcji {
 		
 		//Tablica do wyœwietlania
 		
-		ActionList.add(TestowaAkcja);
+		ActivityList.add(TestowaAkcja);
 		
-		int actionListSize = ActionList.size();
+		int actionListSize = ActivityList.size();
 		
         String[] columnNames = {"Id","Name","Time","PrevList","NextList","Reserve","IsCrytical"};
         
         Object[][] data = {};
-        
-        for (CPMActivity obj : ActionList) {
-        	Object[] array = obj.getArrayRow();
-        	
-        }      
-		
+       
         DefaultTableModel model = new DefaultTableModel(); 
         
         JTable table = new JTable(model);
-        
-
-        
-        
-        
-        
+                
         for (String l : columnNames) {
             model.addColumn(l);
         }
         
         
-        model.addRow(TestowaAkcja.getArrayRow());
-       
-		AddingActionButton.addActionListener(e -> {
-			CPMActivity NewActivity = new CPMActivity(Integer.parseInt(IdTextField.getText()),NameTextField.getText());
+        model.addRow(TestowaAkcja.getArrayRow());       
+        
+        inputPane.getAddingActionButton().addActionListener(e -> {
+			CPMActivity newActivity = inputPane.getNewActivity();
 			
-			if (ChooseTimeMethodGroup.isButtonSelected(0)) {
-				NewActivity.setTime(Duration.ofSeconds(Integer.parseInt(TimeTextField.getText())));
+			if (ActivityList.contains(newActivity)) {
+				System.out.println("To Id ju¿ istnieje");
 			}
-
-			ActionList.add(NewActivity);
-			model.addRow(NewActivity.getArrayRow());
-			System.out.println(ActionList);
+			
+        	ActivityList.add(newActivity);
+			model.addRow(newActivity.getArrayRow());
+			System.out.println(ActivityList);
+			
+			for (CPMActivity activity : ActivityList) {
+				System.out.println(activity);
+			}
 		});
         
         
