@@ -43,20 +43,6 @@ public class TestFunkcji {
 		
 		NoweOkienko.add(LPole);
 		
-		Integer PunktID = 5;
-		String PunktNazwa = "NowyElement";
-		Duration PunktCzas = Duration.ofHours(1);
-		String PunktLista ="1,2,3,4";
-		Set<Integer> WymaganeLista = new HashSet<Integer>();
-		WymaganeLista.add(3);
-		WymaganeLista.add(4);
-		WymaganeLista.add(5);
-		CPMActivity TestowaAkcja = new CPMActivity(PunktID, PunktNazwa);
-		
-		TestowaAkcja.addPrevActionFromString(PunktLista);
-		TestowaAkcja.removePrevAction(1);
-		TestowaAkcja.addNextActionFromIndex(2,WymaganeLista);
-		
 		String[] TimeMethodStringList = {"sekundy","minuty","godziny","dni"};
 		
 		AzRadioButtonGroup ChooseTimeMethodGroup = new AzRadioButtonGroup(TimeMethodStringList,2);
@@ -94,9 +80,14 @@ public class TestFunkcji {
 			}
 			
 			public JButton getAddingActionButton() {
-				return this.AddingActionButton;
+				return AddingActionButton;
 			}
 			
+			public boolean isValidActivity() {
+				boolean check = CPMActivity.isValidActivity(Integer.parseInt(IdTextField.getText()),PrevActionTextField.getText());
+				return check;
+			}
+					
 			public CPMActivity getNewActivity() {
 				CPMActivity newActivity = new CPMActivity(Integer.parseInt(IdTextField.getText()),NameTextField.getText());
 				newActivity.setTime(Duration.ofSeconds(Integer.parseInt(TimeTextField.getText())));
@@ -114,47 +105,34 @@ public class TestFunkcji {
 		//
 		
 		BTest.addActionListener(e -> {
-			System.out.println(TestowaAkcja.getPrevList());
+			;
 		});
 		
 		BTest2.addActionListener(e -> {
-			System.out.println(TestowaAkcja.getNextList());
+			;
 		});
 		
 		//Tablica do wyœwietlania
 		
-		ActivityList.add(TestowaAkcja);
-		
-		int actionListSize = ActivityList.size();
-		
         String[] columnNames = {"Id","Name","Time","PrevList","NextList","Reserve","IsCrytical"};
-        
-        Object[][] data = {};
-       
-        DefaultTableModel model = new DefaultTableModel(); 
-        
+        DefaultTableModel model = new DefaultTableModel();
         JTable table = new JTable(model);
-                
+        
         for (String l : columnNames) {
             model.addColumn(l);
         }
-        
-        
-        model.addRow(TestowaAkcja.getArrayRow());       
-        
+       
         inputPane.getAddingActionButton().addActionListener(e -> {
-			CPMActivity newActivity = inputPane.getNewActivity();
-			
-			if (ActivityList.contains(newActivity)) {
-				System.out.println("To Id ju¿ istnieje");
-			}
-			
-        	ActivityList.add(newActivity);
-			model.addRow(newActivity.getArrayRow());
-			System.out.println(ActivityList);
-			
-			for (CPMActivity activity : ActivityList) {
-				System.out.println(activity);
+			if (inputPane.isValidActivity()) {
+		    	CPMActivity newActivity = inputPane.getNewActivity();
+				
+		    	ActivityList.add(newActivity);
+		    	model.getDataVector().removeAllElements();
+				model.fireTableDataChanged();
+		    					
+				for (CPMActivity activity : ActivityList) {
+						model.addRow(activity.getArrayRow());
+		        }
 			}
 		});
         

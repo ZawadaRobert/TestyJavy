@@ -36,16 +36,32 @@ public class CPMActivity {
 		System.out.println("[Prev] Usuniêto akcjê o id "+z+" z akcji o id "+this.id);
 	}
 	
+	public static boolean isValidActivity (Integer newId, String prevString) {
+		if (!prevString.isEmpty()) {
+			List<Integer> list = Stream.of(prevString.split("\\s*,\\s*")).map(Integer::parseInt).collect(Collectors.toList());
+	
+			if (list.contains(newId))
+				return false;
+			else 
+				return true;
+		}
+		else
+			return true;
+	}
+	
 	public void addPrevActionFromString (String prevString) {
-		List<Integer> list = Stream.of(prevString.split("\\s*,\\s*")).map(Integer::parseInt).collect(Collectors.toList());
+		if (!prevString.isEmpty()) {
 		
-		if (list.contains(this.id)) {
-			System.out.println("[Prev] Nie uda³o siê dodaæ listy id "+list+" do akcji o id "+this.id);
-		}
-		else {
-			this.prevList.addAll(list);
-			System.out.println("[Prev] Dodano listê id "+list+" do akcji o id "+this.id);
-		}
+			List<Integer> list = Stream.of(prevString.split("\\s*,\\s*")).map(Integer::parseInt).collect(Collectors.toList());
+			
+			if (list.contains(this.id)) {
+				System.out.println("[Prev] Nie uda³o siê dodaæ listy id "+list+" do akcji o id "+this.id);
+			}
+			else {
+				this.prevList.addAll(list);
+				System.out.println("[Prev] Dodano listê id "+list+" do akcji o id "+this.id);
+			}
+		}	
 	}
 	
 	public void addNextActionFromIndex (Integer newId, Set<Integer> potentialNextList) {
