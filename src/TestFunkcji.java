@@ -1,43 +1,38 @@
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
-
+import javax.swing.text.AbstractDocument;
 import AzGUI.*;
 
 public class TestFunkcji {
-	private static AzButton BExit, BTest, BTest2;
+	private static AzButton exitButton, testButton, testButton2;
 		
 	private static void createFrame() {
 		AzFrame NoweOkienko = new AzFrame("Jakieœ Okienko",800,1200);
 		
-		BExit = new AzButton("Wyjœcie",30,60,100,20);
-		BTest = new AzButton("Lista Prev",30,90,100,20);
-		BTest2 = new AzButton("Lista Next",30,120,100,20);
+		exitButton = new AzButton("Wyjœcie",30,60,100,20);
+		testButton = new AzButton("Lista Prev",30,90,100,20);
+		testButton2 = new AzButton("Lista Next",30,120,100,20);
 	
 		AzLabel LPole = new AzLabel("Jakiœ tekst",30,120,100,20);
 
 		Set<Component> ButtonsSet = new HashSet<Component>();
-		ButtonsSet.add(BExit);
-		ButtonsSet.add(BTest);
-		ButtonsSet.add(BTest2);
+		ButtonsSet.add(exitButton);
+		ButtonsSet.add(testButton);
+		ButtonsSet.add(testButton2);
 		
 		NoweOkienko.addAll(ButtonsSet);
 		
@@ -49,49 +44,50 @@ public class TestFunkcji {
 		ChooseTimeMethodGroup.setBounds(200,100,100,100);
 		NoweOkienko.add(ChooseTimeMethodGroup);
 		
+
+		
 		class InputPane extends JPanel {
 		
-			private JTextField IdTextField, NameTextField, TimeTextField, PrevActionTextField;
-			private JButton AddingActionButton;
-			
+			private JTextField idTextField, nameTextField, timeTextField, prevActionTextField;
+
+			private JButton addingActionButton;
+						
 			public InputPane() {
 				setLayout(new GridLayout(1,5));
 				setSize(400,20);
 		
-				IdTextField = new JTextField("Id");
-				IdTextField.setSize(40,20);
-				add(IdTextField);
+				idTextField = new GhostTextField("Id");
+				((AbstractDocument)idTextField.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9]"));
+				add(idTextField);
 		
-				NameTextField = new JTextField("Name");
-				NameTextField.setSize(120,20);
-				add(NameTextField);
+				nameTextField = new GhostTextField("Name");
+				add(nameTextField);
 		
-				TimeTextField = new JTextField("Time");
-				TimeTextField.setSize(120,20);
-				add(TimeTextField);
+				timeTextField = new GhostTextField("Time");
+				((AbstractDocument)timeTextField.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.]"));
+				add(timeTextField);
 		
-				PrevActionTextField = new JTextField("PrevAction");
-				PrevActionTextField.setSize(120,20);
-				add(PrevActionTextField);
+				prevActionTextField = new GhostTextField("Prev Actions");
+				((AbstractDocument)prevActionTextField.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9,]"));
+				add(prevActionTextField);
 		
-				AddingActionButton = new JButton("Dodaj");
-				AddingActionButton.setSize(120,20);
-				add(AddingActionButton);			
+				addingActionButton = new JButton("Dodaj");
+				add(addingActionButton);			
 			}
 			
 			public JButton getAddingActionButton() {
-				return AddingActionButton;
+				return addingActionButton;
 			}
 			
 			public boolean isValidActivity() {
-				boolean check = CPMActivity.isValidActivity(Integer.parseInt(IdTextField.getText()),PrevActionTextField.getText());
+				boolean check = CPMActivity.isValidActivity(Integer.parseInt(idTextField.getText()),prevActionTextField.getText());
 				return check;
 			}
 					
 			public CPMActivity getNewActivity() {
-				CPMActivity newActivity = new CPMActivity(Integer.parseInt(IdTextField.getText()),NameTextField.getText());
-				newActivity.setTime(Duration.ofSeconds(Integer.parseInt(TimeTextField.getText())));
-				newActivity.addPrevActionFromString(PrevActionTextField.getText());
+				CPMActivity newActivity = new CPMActivity(Integer.parseInt(idTextField.getText()),nameTextField.getText());
+				newActivity.setTime(Duration.ofSeconds(Integer.parseInt(timeTextField.getText())));
+				newActivity.addPrevActionFromString(prevActionTextField.getText());
 				return newActivity;
 			}
 				
@@ -100,15 +96,15 @@ public class TestFunkcji {
 		InputPane inputPane = new InputPane();
 		NoweOkienko.add(inputPane);
 		
-		Set<CPMActivity> ActivityList = new HashSet<CPMActivity>();
+		Set<CPMActivity> ActivityList = new TreeSet<CPMActivity>();
 		
 		//
 		
-		BTest.addActionListener(e -> {
+		testButton.addActionListener(e -> {
 			;
 		});
 		
-		BTest2.addActionListener(e -> {
+		testButton2.addActionListener(e -> {
 			;
 		});
 		
@@ -146,7 +142,7 @@ public class TestFunkcji {
         
         NoweOkienko.add(TablePane);
 	
-		new AzBasicEvent().performDialogExitFromButton(BExit,NoweOkienko);
+		new AzBasicEvent().performDialogExitFromButton(exitButton,NoweOkienko);
 		new AzBasicEvent().performDialogExitFromX(NoweOkienko);
 		
 		NoweOkienko.setLocationRelativeTo(null);

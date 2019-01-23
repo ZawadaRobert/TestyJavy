@@ -1,12 +1,12 @@
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CPMActivity {
+public class CPMActivity implements Comparable <CPMActivity> {
 	private Integer id;
 	private String name;
 	private Duration time, earlyStart, lateStart, earlyFinish, lateFinish, reserve;
@@ -17,8 +17,8 @@ public class CPMActivity {
 	public CPMActivity (Integer id, String name) {
 		this.setId(id);
 		this.setName(name);
-		this.prevList = new HashSet<Integer>();
-		this.nextList = new HashSet<Integer>();
+		this.prevList = new TreeSet<Integer>();
+		this.nextList = new TreeSet<Integer>();
 	}
 	
 	public void addPrevAction (Integer z) {
@@ -185,5 +185,11 @@ public class CPMActivity {
 	        return false;
 	    CPMActivity activity = (CPMActivity) obj;
 	    return Objects.equals(id, activity.id);
+	}
+
+	@Override
+	public int compareTo(CPMActivity other) {
+		int value = this.getId() - other.getId();
+		return value;
 	}
 }
