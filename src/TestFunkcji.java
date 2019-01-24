@@ -1,50 +1,56 @@
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 import AzGUI.*;
 
 public class TestFunkcji {
+	private JFrame MainWindow;
 	private static AzButton exitButton, testButton, testButton2;
 		
 	private static void createFrame() {
-		AzFrame NoweOkienko = new AzFrame("Jakieœ Okienko",800,1200);
+		JFrame MainWindow = new JFrame("Jakieœ Okienko");
+		MainWindow.setSize(800,800);
+		MainWindow.setLayout(null);
 		
 		exitButton = new AzButton("Wyjœcie",30,60,100,20);
 		testButton = new AzButton("Lista Prev",30,90,100,20);
 		testButton2 = new AzButton("Lista Next",30,120,100,20);
-	
-		AzLabel LPole = new AzLabel("Jakiœ tekst",30,120,100,20);
 
-		Set<Component> ButtonsSet = new HashSet<Component>();
-		ButtonsSet.add(exitButton);
-		ButtonsSet.add(testButton);
-		ButtonsSet.add(testButton2);
-		
-		NoweOkienko.addAll(ButtonsSet);
-		
-		NoweOkienko.add(LPole);
+		MainWindow.add(exitButton);
+		MainWindow.add(testButton);
+		MainWindow.add(testButton2);
+
 		
 		String[] TimeMethodStringList = {"sekundy","minuty","godziny","dni"};
 		
 		AzRadioButtonGroup ChooseTimeMethodGroup = new AzRadioButtonGroup(TimeMethodStringList,2);
 		ChooseTimeMethodGroup.setBounds(200,100,100,100);
-		NoweOkienko.add(ChooseTimeMethodGroup);
+		MainWindow.add(ChooseTimeMethodGroup);
 		
-
 		
 		class InputPane extends JPanel {
 		
@@ -94,10 +100,8 @@ public class TestFunkcji {
 		}
 		
 		InputPane inputPane = new InputPane();
-		NoweOkienko.add(inputPane);
-		
-		Set<CPMActivity> ActivityList = new TreeSet<CPMActivity>();
-		
+		MainWindow.add(inputPane);
+						
 		//
 		
 		testButton.addActionListener(e -> {
@@ -118,37 +122,60 @@ public class TestFunkcji {
             model.addColumn(l);
         }
        
-        inputPane.getAddingActionButton().addActionListener(e -> {
-			if (inputPane.isValidActivity()) {
-		    	CPMActivity newActivity = inputPane.getNewActivity();
-				
-		    	ActivityList.add(newActivity);
-		    	model.getDataVector().removeAllElements();
-				model.fireTableDataChanged();
-		    					
-				for (CPMActivity activity : ActivityList) {
-						model.addRow(activity.getArrayRow());
-		        }
-			}
-		});
+
         
         
         table.setPreferredScrollableViewportSize(new Dimension(500, 70));
         table.setFillsViewportHeight(true);
         
         JScrollPane TablePane = new JScrollPane(table);
-        TablePane.setBounds(30,300,500,70);
+        TablePane.setBounds(30,300,500,140);
         table.setEnabled(false);
         
-        NoweOkienko.add(TablePane);
+        MainWindow.add(TablePane);
 	
-		new AzBasicEvent().performDialogExitFromButton(exitButton,NoweOkienko);
-		new AzBasicEvent().performDialogExitFromX(NoweOkienko);
+		new AzBasicEvent().performDialogExitFromButton(exitButton,MainWindow);
+		new AzBasicEvent().performDialogExitFromX(MainWindow);
 		
-		NoweOkienko.setLocationRelativeTo(null);
-		NoweOkienko.setVisible(true);
+		class MainMenuBar extends JMenuBar {
+
+		private JMenu menu, submenu;
+		private JMenuItem menuItem, menuItem2, menuItem3;
+
+		public MainMenuBar() {
+			
+			menu = new JMenu("Plik");
+			menu.setMnemonic(KeyEvent.VK_P);
+
+			menuItem = new JMenuItem("An item",KeyEvent.VK_T);
+			menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
+			menu.add(menuItem);
+
+			menu.addSeparator();
+			
+			submenu = new JMenu("A submenu");
+			submenu.setMnemonic(KeyEvent.VK_S);
+	
+			menuItem2 = new JMenuItem("An item in the submenu");
+			menuItem2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_2,ActionEvent.ALT_MASK));
+			submenu.add(menuItem2);
+	
+			menuItem3 = new JMenuItem("Another item");
+			submenu.add(menuItem3);
+			menu.add(submenu);
+						
+			add(menu);
+			
+			}
+		}
 		
-		NoweOkienko.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		MainMenuBar mainMenuBar = new MainMenuBar();
+		MainWindow.setJMenuBar(mainMenuBar);
+
+		MainWindow.setLocationRelativeTo(null);
+		MainWindow.setVisible(true);
+		
+		MainWindow.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	}
 	
     public static void main(String[] args) {

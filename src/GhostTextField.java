@@ -20,7 +20,7 @@ public class GhostTextField extends JTextField implements DocumentListener {
 		
 		label = new JLabel();
 		label.setText(this.ghostText);
-		label.setForeground(Color.RED);
+		label.setForeground(Color.GRAY);
 		
 		setLayout(new BorderLayout());
 		add(label);

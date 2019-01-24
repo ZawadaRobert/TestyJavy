@@ -3,8 +3,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class CPMActivity implements Comparable <CPMActivity> {
 	private Integer id;
@@ -38,7 +36,7 @@ public class CPMActivity implements Comparable <CPMActivity> {
 	
 	public static boolean isValidActivity (Integer newId, String prevString) {
 		if (!prevString.isEmpty()) {
-			List<Integer> list = Stream.of(prevString.split("\\s*,\\s*")).map(Integer::parseInt).collect(Collectors.toList());
+			List<Integer> list = Az.toIntegerList(prevString);
 	
 			if (list.contains(newId))
 				return false;
@@ -52,7 +50,7 @@ public class CPMActivity implements Comparable <CPMActivity> {
 	public void addPrevActionFromString (String prevString) {
 		if (!prevString.isEmpty()) {
 		
-			List<Integer> list = Stream.of(prevString.split("\\s*,\\s*")).map(Integer::parseInt).collect(Collectors.toList());
+			List<Integer> list = Az.toIntegerList(prevString);
 			
 			if (list.contains(this.id)) {
 				System.out.println("[Prev] Nie uda³o siê dodaæ listy id "+list+" do akcji o id "+this.id);
