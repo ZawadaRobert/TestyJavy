@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class CPMActivity implements Comparable <CPMActivity> {
+public class CPMActivity implements Comparable<CPMActivity> {
 	private Integer id;
 	private String name;
 	private Duration time, earlyStart, lateStart, earlyFinish, lateFinish, reserve;

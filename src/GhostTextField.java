@@ -37,19 +37,16 @@ public class GhostTextField extends JTextField implements DocumentListener {
 	@Override
 	public void changedUpdate(DocumentEvent e) {
 		checkForPrompt();
-		
 	}
 
 	@Override
 	public void insertUpdate(DocumentEvent e) {
-		checkForPrompt();
-		
+		checkForPrompt();	
 	}
 
 	@Override
 	public void removeUpdate(DocumentEvent e) {
-		checkForPrompt();
-		
+		checkForPrompt();		
 	}
 
 }

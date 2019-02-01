@@ -9,13 +9,13 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class AzBasicEvent {
-	public void performDialogExitFromButton(AbstractButton button, JFrame frame) {
+	public static void performDialogExitFromButton(JFrame frame, AbstractButton button) {
 		button.addActionListener(e -> {
-			eventDialogExit (frame);
+			eventDialogExit(frame);
 		});
 	}
 	
-	public void performDialogExitFromX(JFrame frame) {
+	public static void performDialogExitFromX(JFrame frame) {
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -24,9 +24,9 @@ public class AzBasicEvent {
 		});
 	}
 	
-	public static void eventDialogExit (JFrame frame) {
+	public static void eventDialogExit(JFrame frame) {
 		
-		Object message = "Czy na pewno chcesz zakoñczyæ dzia³anie programu?";
+		String message = "Czy na pewno chcesz zakoñczyæ dzia³anie programu?";
 		String title = "PotwierdŸ";
 		int mode = JOptionPane.YES_NO_OPTION;
 		int type = JOptionPane.QUESTION_MESSAGE;
@@ -35,5 +35,15 @@ public class AzBasicEvent {
 	
 		int confirm = JOptionPane.showOptionDialog(frame, message, title, mode, type, icon, options, options[0]);
 		if (confirm == 0) System.exit(0);
+	}
+	
+	public static void eventDialogError(JFrame frame, String errorText) {
+
+		String message = errorText;
+		String title = "B³¹d";
+		int type = JOptionPane.ERROR_MESSAGE;
+		Icon icon = null;
+	
+		JOptionPane.showMessageDialog(frame, message, title, type);
 	}
 }
