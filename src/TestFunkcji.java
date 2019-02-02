@@ -28,7 +28,7 @@ import AzGUI.AzRadioButtonGroup;
 
 public class TestFunkcji {
 	private static JFrame mainFrame;
-	private static AzButton exitButton, saveButton, resetButton;
+	private static AzButton exitButton, calculateButton, resetButton;
 	private static Set<CPMActivity> activityList;
 	
 	private static void createFrame() {
@@ -39,20 +39,12 @@ public class TestFunkcji {
 		activityList = new TreeSet<CPMActivity>();
 	
 		exitButton = new AzButton("Wyjœcie",30,60,120,20);
-		saveButton = new AzButton("Zapisz",30,90,120,20);
+		calculateButton = new AzButton("Przelicz Next",30,90,120,20);
 		resetButton = new AzButton("Reset",30,120,120,20);
 
 		mainFrame.add(exitButton);
-		mainFrame.add(saveButton);
+		mainFrame.add(calculateButton);
 		mainFrame.add(resetButton);
-		
-		saveButton.addActionListener(e -> {
-
-		});
-		
-		resetButton.addActionListener(e -> {
-
-		});	
 		
 		String[] timeMethodStringList = {"sekundy","minuty","godziny","dni"};
 		
@@ -131,13 +123,13 @@ public class TestFunkcji {
 				newActivity.addPrevActionFromString(prevActionTextField.getText());
 				
 				switch (t) {
-					case 0: newActivity.setTime(Duration.ofSeconds(Integer.parseInt(timeTextField.getText())));
+					case 0: newActivity.setTime(Az.toSeconds(timeTextField.getText()));
 							break;
-					case 1: newActivity.setTime(Duration.ofMinutes(Integer.parseInt(timeTextField.getText())));
+					case 1: newActivity.setTime(Az.toMinutes(timeTextField.getText()));
 							break;
-					case 2: newActivity.setTime(Duration.ofHours(Integer.parseInt(timeTextField.getText())));
+					case 2: newActivity.setTime(Az.toHours(timeTextField.getText()));
 							break;
-					case 3: newActivity.setTime(Duration.ofDays(Integer.parseInt(timeTextField.getText())));
+					case 3: newActivity.setTime(Az.toDays(timeTextField.getText()));
 							break;
 				}
 				return newActivity;
@@ -206,46 +198,55 @@ public class TestFunkcji {
 		        
 				setBorder(BorderFactory.createTitledBorder("Lista aktywnoœci"));
 			}
+						
+			public void refreshModel() {
+				model.refresh(activityList);
+			}
 			
-			public ActivityTableModel getModel() {
-				return model;
+			public void clearModel() {
+				model.setRowCount(0);
+			}
+			
+			public void addActionFromInputPane (InputPane pane) {
+
+				if (pane.haveFilledFields()) {
+					
+					if (pane.haveValidActivity()) {
+					
+						CPMActivity newActivity = pane.getNewActivity();
+						
+						if (activityList.contains(newActivity)) {
+							AzBasicEvent.eventDialogError(mainFrame, "To id ju¿ istnieje");
+						}
+						
+						else {
+							activityList.add(newActivity);		
+							refreshModel();
+						}
+					}
+					
+					else {
+						AzBasicEvent.eventDialogError(mainFrame, "Id poprzedzaj¹cej aktywnoœci nie mo¿e byæ takie same jak id wprowadzanej aktywnosci");
+					}
+				}
+					
+				else {
+					AzBasicEvent.eventDialogError(mainFrame, "Podaj id, nazwê i czas trwania aktywnoœci");
+				}
 			}
 			
 		}
 		TablePane tablePane = new TablePane();
 		mainFrame.add(tablePane);		
 		//OUTPUT TABLE PANE END			
-
-		inputPane.getAddingActionButton().addActionListener(e -> {
-
-			if (inputPane.haveFilledFields()) {
-				
-				if (inputPane.haveValidActivity()) {
-				
-					CPMActivity newActivity = inputPane.getNewActivity();
-					
-					if (activityList.contains(newActivity)) {
-						AzBasicEvent.eventDialogError(mainFrame, "To id ju¿ istnieje");
-					}
-					
-					else {
-						activityList.add(newActivity);		
-						tablePane.getModel().refresh(activityList);
-					}
-				}
-				
-				else {
-					AzBasicEvent.eventDialogError(mainFrame, "Id poprzedzaj¹cej aktywnoœci nie mo¿e byæ takie same jak id wprowadzanej aktywnosci");
-				}
-			}
-				
-			else {
-				AzBasicEvent.eventDialogError(mainFrame, "Podaj id, nazwê i czas trwania aktywnoœci");
-			}
-		});
+		
+		inputPane.getAddingActionButton().addActionListener(e -> tablePane.addActionFromInputPane(inputPane));
        
-		resetButton.addActionListener(e -> tablePane.getModel().setRowCount(0));
+		resetButton.addActionListener(e -> tablePane.clearModel());
+		
+		calculateButton.addActionListener(e -> {
 
+		});
 	
 		AzBasicEvent.performDialogExitFromButton(mainFrame,exitButton);
 		AzBasicEvent.performDialogExitFromX(mainFrame);

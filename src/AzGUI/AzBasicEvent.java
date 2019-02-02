@@ -46,4 +46,5 @@ public class AzBasicEvent {
 	
 		JOptionPane.showMessageDialog(frame, message, title, type);
 	}
+
 }
