@@ -63,13 +63,20 @@ public class CPMActivity implements Comparable<CPMActivity> {
 	}
 	
 	public void addNextActionFromIndex (Integer newId, Set<Integer> potentialNextList) {
-		for(Integer x : potentialNextList)
+		for(Integer x : potentialNextList) {
 			if (x==id) {
 				this.nextList.add(newId);
 				System.out.println("[Next] Dodano akcjê o id "+newId+" do akcji o id "+this.id);
 				break;
 			}
 		}
+	}
+	
+	public void addNextActionFromList (Set<CPMActivity> list) {
+		for(CPMActivity activity : list) {
+			this.addNextActionFromIndex(activity.getId(),activity.getPrevList());
+		}
+	}
 	
 	public void calculateEarlyFinish () {
 		this.earlyFinish=this.earlyStart.plus(this.time);
@@ -86,7 +93,19 @@ public class CPMActivity implements Comparable<CPMActivity> {
 	}
 	
 	public Object[] getArrayRow() {
-		Object[] array = {this.getId(),this.getName(),this.getTime(),this.getPrevList(),this.getNextList(),this.getReserve(),this.isCrytical()};
+		Object[] array = {
+				this.getId(),
+				this.getName(),
+				this.getTime(),
+				this.getPrevList(),
+				this.getNextList(),
+				this.getEarlyStart(),
+				this.getEarlyFinish(),
+				this.getLateStart(),
+				this.getLateFinish(),
+				this.getReserve(),
+				this.isCrytical()
+				};
 		return array;
 	}
 

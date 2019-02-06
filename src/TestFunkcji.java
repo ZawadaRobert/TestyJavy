@@ -3,6 +3,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -54,11 +55,73 @@ public class TestFunkcji {
 		
 		//ACTIVITY TABLE MODEL START
 		class ActivityTableModel extends DefaultTableModel {
+			
+			Set<CPMActivity> activitySet;
+			
+			public ActivityTableModel() {
+				this.activitySet= new TreeSet<CPMActivity>();	
+			}
 	        	
-	      	public void refresh(Set<CPMActivity> activitySet) {
+	      	public void refresh(Set<CPMActivity> activitySetOld) {
 	     		this.setRowCount(0);
 	     		
-				for (CPMActivity activity : activitySet) {				
+				Duration totalDuration = Duration.ZERO;
+	     		
+				for (CPMActivity activity : activityList) {
+					activity.addNextActionFromList(activityList);
+					Set<Integer> prevList = activity.getPrevList();
+					Duration baseES = Duration.ZERO;
+
+					for (Integer i : prevList) {
+						for (CPMActivity act : activitySetOld) {
+							if (act.getId()==i) {
+								if (baseES.compareTo(act.getEarlyFinish())>0);
+									baseES=act.getEarlyFinish();
+							}		
+						}			
+					}
+
+				activity.setEarlyStart(baseES);
+				activity.calculateEarlyFinish();
+				}
+
+				for (CPMActivity activity : activityList) {
+					if (activity.getEarlyFinish().compareTo(totalDuration)>0) {
+						totalDuration = activity.getEarlyFinish();
+					}
+				}
+				
+				for (CPMActivity activity : activityList) {
+					activity.setLateFinish(totalDuration);
+					activity.calculateLateStart();
+				}
+
+				
+				for (CPMActivity activity : activityList) {
+					Set<Integer> nextList = activity.getNextList();
+
+					Duration baseLF=totalDuration;
+
+					for (Integer i : nextList) {
+						for (CPMActivity act : activitySetOld) {
+							if (act.getId()==i) {
+								
+								System.out.println(act.getLateStart());
+								
+						
+								if (baseLF.compareTo(act.getLateStart())<0);
+									baseLF=act.getLateStart();
+							
+							}		
+						}			
+					}
+
+				activity.setLateFinish(baseLF);
+				activity.calculateLateStart();
+				activity.calculateReserve();
+				}
+	     		
+				for (CPMActivity activity : activitySetOld) {				
 					this.addRow(activity.getArrayRow());
 				}
 	       	}
@@ -67,13 +130,11 @@ public class TestFunkcji {
 		
 		//INPUT PANE START
 		class InputPane extends JPanel {
-		
 			
 			private JTextField idTextField, nameTextField, timeTextField, prevActionTextField;
 			private JButton addingActionButton;
 			private JComboBox<String> methodList;
-						
-
+					
 			public InputPane() {				
 				setLayout(new GridLayout(1,5));
 				setSize(new Dimension(500,45));
@@ -180,7 +241,7 @@ public class TestFunkcji {
 
 		        setBounds(0,300,500,140);
 		        
-		        String[] columnNames = {"Id","Name","Time","PrevList","NextList","Reserve","IsCrytical"};
+		        String[] columnNames = {"Id","Name","Time","PrevList","NextList","ES","EF","LS","LF","Reserve","IsCrytical"};
 		        model = new ActivityTableModel();
 		        
 		        for (String l : columnNames) {
@@ -245,7 +306,10 @@ public class TestFunkcji {
 		resetButton.addActionListener(e -> tablePane.clearModel());
 		
 		calculateButton.addActionListener(e -> {
-
+			for (CPMActivity activity : activityList) {
+				activity.addNextActionFromList(activityList);
+			}
+			tablePane.refreshModel();
 		});
 	
 		AzBasicEvent.performDialogExitFromButton(mainFrame,exitButton);
