@@ -56,10 +56,10 @@ public class TestFunkcji {
 		//ACTIVITY TABLE MODEL START
 		class ActivityTableModel extends DefaultTableModel {
 			
-			Set<CPMActivity> activitySet;
+			private Set<CPMActivity> activitySet;
 			
 			public ActivityTableModel() {
-				this.activitySet= new TreeSet<CPMActivity>();	
+				this.activitySet = new TreeSet<CPMActivity>();	
 			}
 	        	
 	      	public void refresh(Set<CPMActivity> activitySetOld) {
@@ -125,6 +125,11 @@ public class TestFunkcji {
 					this.addRow(activity.getArrayRow());
 				}
 	       	}
+
+			public Set<CPMActivity> getActivitySet() {
+				return activitySet;
+			}
+			
 	    }	
 		//ACTIVITY TABLE MODEL ENDS	
 		
