@@ -13,35 +13,26 @@ public class CPMActivity implements Comparable<CPMActivity> {
 	
 	
 	public CPMActivity (Integer id, String name) {
-		this.setId(id);
-		this.setName(name);
-		this.prevList = new TreeSet<Integer>();
-		this.nextList = new TreeSet<Integer>();
+		setId(id);
+		setName(name);
+		prevList = new TreeSet<Integer>();
+		nextList = new TreeSet<Integer>();
 	}
 	
 	public void addPrevAction (Integer z) {
-		if (z==this.id) {
-			System.out.println("[Prev] Nie uda³o siê dodaæ akcji id "+z+" do akcji o id "+this.id);
-		}
-		else {
+		if (z!=this.id) {
 			this.prevList.add(z);
-			System.out.println("[Prev] Dodano akcjê id "+z+" do akcji o id "+this.id);
 		}
 	}
 	
 	public void removePrevAction (Integer z) {
 		this.prevList.remove(z);
-		System.out.println("[Prev] Usuniêto akcjê o id "+z+" z akcji o id "+this.id);
 	}
 	
 	public static boolean isValidActivity (Integer newId, String prevString) {
 		if (!prevString.isEmpty()) {
 			List<Integer> list = Az.toIntegerList(prevString);
-	
-			if (list.contains(newId))
-				return false;
-			else 
-				return true;
+			return !list.contains(newId);
 		}
 		else
 			return true;
@@ -52,12 +43,8 @@ public class CPMActivity implements Comparable<CPMActivity> {
 		
 			List<Integer> list = Az.toIntegerList(prevString);
 			
-			if (list.contains(this.id)) {
-				System.out.println("[Prev] Nie uda³o siê dodaæ listy id "+list+" do akcji o id "+this.id);
-			}
-			else {
+			if (!list.contains(this.id)) {
 				this.prevList.addAll(list);
-				System.out.println("[Prev] Dodano listê id "+list+" do akcji o id "+this.id);
 			}
 		}	
 	}
@@ -66,8 +53,6 @@ public class CPMActivity implements Comparable<CPMActivity> {
 		for(Integer x : potentialNextList) {
 			if (x==id) {
 				this.nextList.add(newId);
-				System.out.println("[Next] Dodano akcjê o id "+newId+" do akcji o id "+this.id);
-				break;
 			}
 		}
 	}
@@ -78,33 +63,25 @@ public class CPMActivity implements Comparable<CPMActivity> {
 		}
 	}
 	
-	public void calculateEarlyFinish () {
-		this.earlyFinish=this.earlyStart.plus(this.time);
-	}	
-	
-	public void calculateLateStart () {
-		this.lateStart=this.lateFinish.minus(this.time);
-	}
-	
 	public void calculateReserve () {
-		this.reserve=this.lateStart.minus(this.earlyStart);
-		if (this.reserve.isZero()) this.crytical=true;
-		else this.crytical=false;
+		reserve=lateStart.minus(earlyStart);
+		if (reserve.isZero()) crytical=true;
+		else crytical=false;
 	}
 	
 	public Object[] getArrayRow() {
 		Object[] array = {
-				this.getId(),
-				this.getName(),
-				this.getTime(),
-				this.getPrevList(),
-				this.getNextList(),
-				this.getEarlyStart(),
-				this.getEarlyFinish(),
-				this.getLateStart(),
-				this.getLateFinish(),
-				this.getReserve(),
-				this.isCrytical()
+				getId(),
+				getName(),
+				getTime(),
+				getPrevList(),
+				getNextList(),
+				getEarlyStart(),
+				getEarlyFinish(),
+				getLateStart(),
+				getLateFinish(),
+				getReserve(),
+				isCrytical()
 				};
 		return array;
 	}
@@ -112,7 +89,7 @@ public class CPMActivity implements Comparable<CPMActivity> {
 	public Integer getId() {
 		return id;
 	}
-
+	
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -128,7 +105,7 @@ public class CPMActivity implements Comparable<CPMActivity> {
 	public Duration getTime() {
 		return time;
 	}
-
+	
 	public void setTime(Duration time) {
 		this.time = time;
 	}
@@ -139,6 +116,7 @@ public class CPMActivity implements Comparable<CPMActivity> {
 
 	public void setEarlyStart(Duration earlyStart) {
 		this.earlyStart = earlyStart;
+		earlyFinish=earlyStart.plus(time);
 	}
 
 	public Duration getLateStart() {
@@ -155,6 +133,7 @@ public class CPMActivity implements Comparable<CPMActivity> {
 
 	public void setLateFinish(Duration lateFinish) {
 		this.lateFinish = lateFinish;
+		lateStart=lateFinish.minus(time);
 	}
 
 	public Duration getReserve() {
@@ -177,13 +156,37 @@ public class CPMActivity implements Comparable<CPMActivity> {
 		return nextList;
 	}
 
-	public void setnextList(Set<Integer> nextList) {
+	public void setNextList(Set<Integer> nextList) {
 		this.nextList = nextList;
+	}
+	
+	public boolean isPrevListContains(Integer id) {
+		return prevList.contains(id);
+	}
+	
+	public boolean isFromNextContains(Integer id) {
+		return nextList.contains(id);
+	}
+	
+	public void removeFromPrevList(Integer id) {
+		prevList.remove(id);
+	}
+	
+	public void removeFromNextList(Integer id) {
+		nextList.remove(id);
+	}
+	
+	public boolean isStart() {
+		return prevList.size()==0;
+	}
+	
+	public boolean isEnd() {
+		return nextList.size()==0;
 	}
 	
 	@Override
 	public String toString() {
-		return("Id: "+id+", "+name+" o czasie "+time);
+		return("Id:"+id+"_"+name+"_time:"+time+"Prev:"+prevList+"_Next:"+nextList);
 	}
 	
 	@Override
@@ -209,4 +212,5 @@ public class CPMActivity implements Comparable<CPMActivity> {
 		int value = this.getId() - other.getId();
 		return value;
 	}
+
 }
