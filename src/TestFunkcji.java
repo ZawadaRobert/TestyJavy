@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.time.Duration;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -154,17 +155,22 @@ public class TestFunkcji {
 				return activitySet;
 			}
 			
-			public Vector<String> getCryticalPathsList() {
+			public LinkedList<String> getCryticalPathsList() {
 				
 				Set<CPMActivity> cryticalSet = new TreeSet<CPMActivity>();
 				Set<Integer> cryticalIdSet = new TreeSet<Integer>();
 				Set<Integer> nonCryticalIdSet = new TreeSet<Integer>();
-				Set<String> cryticalpathsSet = new TreeSet<String>();
+				Set<Integer> startingIdSet = new TreeSet<Integer>();
+				LinkedList<String> pathList;
+				Graph criticalGraph = new Graph();
 				
 				for (CPMActivity activity : activitySet) {
 					if (activity.isCrytical()) {
 						cryticalSet.add(activity);
 						cryticalIdSet.add(activity.getId());
+						if (activity.isStart()) {
+							startingIdSet.add(activity.getId());
+						}
 					}
 				}
 				
@@ -176,41 +182,22 @@ public class TestFunkcji {
 						activity.removeFromPrevList(id);
 						activity.removeFromNextList(id);
 					}
-				}
-				
-				for (CPMActivity activity : cryticalSet) {
-					
-					if (activity.isStart()) {
-						CPMActivity currentActivity = activity;
-						Integer currentId = activity.getId();
-						String currentPath = "START -> "+currentId+" -> ";
-						
-						while (!currentActivity.isEnd()) {
-							
-							if (currentActivity.getNextList().size()==1) {
-							
-								currentId = currentActivity.getNextList().stream().findFirst().get();
-								currentActivity = getActivity(currentId);
-								currentPath += currentId+" -> ";
-							}
-							
-							else {
-								
-								System.out.println(currentActivity + " ma wiêcj ni¿ jedn¹ nastêpn¹ akcjê.");
-								currentId = currentActivity.getNextList().stream().findFirst().get();
-								currentActivity = getActivity(currentId);
-								currentPath += currentId+" -> ";
-								
-							}
-						}
-						currentPath += "END";
-						System.out.println(currentPath);
+					for (Integer nextId : activity.getNextList()) {
+						criticalGraph.addEdge(activity.getId(), nextId);
 					}
 				}
+				
 
-				return new Vector<String>();
+				pathList = criticalGraph.getPathStartEnd();
+
+				
+				System.out.println(pathList);
+
+				return pathList;
 			}
 			
+			
+			//Czyszczenie zestawu aktywnoœci i modelu
 			public void clear() {
 				activitySet.clear();
 				setRowCount(0);
@@ -236,10 +223,10 @@ public class TestFunkcji {
 				((AbstractDocument) idTextField.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9]"));
 				add(idTextField);
 
-				nameTextField = new GhostTextField("Name");
+				nameTextField = new GhostTextField("Nazwa");
 				add(nameTextField);
 
-				timeTextField = new GhostTextField("Time");
+				timeTextField = new GhostTextField("Czas");
 				((AbstractDocument) timeTextField.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.]"));
 				add(timeTextField);
 
@@ -248,7 +235,7 @@ public class TestFunkcji {
 				methodList.setSelectedIndex(2);
 				add(methodList);
 
-				prevActionTextField = new GhostTextField("Prev Actions");
+				prevActionTextField = new GhostTextField("Poprzedzaj¹ce ackje");
 				((AbstractDocument) prevActionTextField.getDocument())
 						.setDocumentFilter(new CharacterFilter("[^0-9,]"));
 				add(prevActionTextField);
@@ -261,6 +248,10 @@ public class TestFunkcji {
 
 			public JButton getAddingActionButton() {
 				return addingActionButton;
+			}
+			
+			public boolean idIsNotZero() {
+				return !(Integer.parseInt(idTextField.getText())==0);
 			}
 
 			public boolean haveFilledFields() {
@@ -353,34 +344,30 @@ public class TestFunkcji {
 			}
 
 			public void addActionFromInputPane(InputPane pane) {
-
 				if (pane.haveFilledFields()) {
-
-					if (pane.haveValidActivity()) {
-
-						CPMActivity newActivity = pane.getNewActivity();
-
-						if (activityTableModel.getActivitySet().contains(newActivity)) {
-							AzBasicEvent.eventDialogError(mainFrame, "To id ju¿ istnieje");
+					if (pane.idIsNotZero()) {
+						if (pane.haveValidActivity()) {
+							CPMActivity newActivity = pane.getNewActivity();
+							if (!activityTableModel.getActivitySet().contains(newActivity)) {
+								activityTableModel.getActivitySet().add(newActivity);
+								activityTableModel.refresh();
+							}
+							else {
+								AzBasicEvent.eventDialogError(mainFrame,"To id ju¿ istnieje");
+							}
 						}
-
 						else {
-							activityTableModel.getActivitySet().add(newActivity);
-							activityTableModel.refresh();
+							AzBasicEvent.eventDialogError(mainFrame,"Id poprzedzaj¹cej aktywnoœci nie mo¿e byæ takie same jak id wprowadzanej aktywnosci");
 						}
 					}
-
 					else {
-						AzBasicEvent.eventDialogError(mainFrame,
-								"Id poprzedzaj¹cej aktywnoœci nie mo¿e byæ takie same jak id wprowadzanej aktywnosci");
-					}
+						AzBasicEvent.eventDialogError(mainFrame,"Id nie mo¿e wynosiæ 0");
+					}	
 				}
-
 				else {
-					AzBasicEvent.eventDialogError(mainFrame, "Podaj id, nazwê i czas trwania aktywnoœci");
+					AzBasicEvent.eventDialogError(mainFrame,"Podaj id, nazwê i czas trwania aktywnoœci");
 				}
 			}
-
 		}
 		TablePane tablePane = new TablePane();
 		mainFrame.add(tablePane);
@@ -392,13 +379,17 @@ public class TestFunkcji {
 			public PathPane() {
 				
 				setBounds(0, 600, 750, 100);
-				setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-				
-				add(new JLabel("Testowa etykieta"));
-				add(new JLabel("Testowa etykieta 2"));
-				add(new JLabel("Testowa etykieta 3"));
-				
+				setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));	
 				setBorder(BorderFactory.createTitledBorder("Lista œcie¿ek krytycznych"));
+			}
+			
+			public void displayPaths() {
+				for (String s : activityTableModel.getCryticalPathsList()) {
+					add(new JLabel(s));
+				}
+				
+				add(new JLabel("testowe"));
+				repaint();
 			}
 		}
 		PathPane pathPane = new PathPane();       
@@ -409,6 +400,7 @@ public class TestFunkcji {
 		
 		resetButton.addActionListener(e -> activityTableModel.clear());
 		getPathsButton.addActionListener(e -> activityTableModel.getCryticalPathsList());
+		getPathsButton.addActionListener(e -> pathPane.displayPaths());
 
 		AzBasicEvent.performDialogExitFromButton(mainFrame, exitButton);
 		AzBasicEvent.performDialogExitFromX(mainFrame);

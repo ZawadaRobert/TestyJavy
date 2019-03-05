@@ -20,9 +20,8 @@ public class CPMActivity implements Comparable<CPMActivity> {
 	}
 	
 	public void addPrevAction (Integer z) {
-		if (z!=this.id) {
+		if (z!=this.id)
 			this.prevList.add(z);
-		}
 	}
 	
 	public void removePrevAction (Integer z) {
@@ -40,20 +39,16 @@ public class CPMActivity implements Comparable<CPMActivity> {
 	
 	public void addPrevActionFromString (String prevString) {
 		if (!prevString.isEmpty()) {
-		
-			List<Integer> list = Az.toIntegerList(prevString);
-			
-			if (!list.contains(this.id)) {
+			List<Integer> list = Az.toIntegerList(prevString);	
+			if (!list.contains(this.id))
 				this.prevList.addAll(list);
-			}
 		}	
 	}
 	
 	public void addNextActionFromIndex (Integer newId, Set<Integer> potentialNextList) {
 		for(Integer x : potentialNextList) {
-			if (x==id) {
+			if (x==id)
 				this.nextList.add(newId);
-			}
 		}
 	}
 	
@@ -65,8 +60,10 @@ public class CPMActivity implements Comparable<CPMActivity> {
 	
 	public void calculateReserve () {
 		reserve=lateStart.minus(earlyStart);
-		if (reserve.isZero()) crytical=true;
-		else crytical=false;
+		if (reserve.isZero())
+			crytical=true;
+		else
+			crytical=false;
 	}
 	
 	public Object[] getArrayRow() {
@@ -212,5 +209,4 @@ public class CPMActivity implements Comparable<CPMActivity> {
 		int value = this.getId() - other.getId();
 		return value;
 	}
-
 }
