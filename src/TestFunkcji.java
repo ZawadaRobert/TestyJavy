@@ -22,6 +22,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -187,10 +188,8 @@ public class TestFunkcji {
 					}
 				}
 				
-
 				pathList = criticalGraph.getPathStartEnd();
-
-				
+		
 				System.out.println(pathList);
 
 				return pathList;
@@ -293,35 +292,6 @@ public class TestFunkcji {
 		mainFrame.add(inputPane);
 		// INPUT PANE END
 
-		// MAIN MENU BAR START
-		class MainMenuBar extends JMenuBar {
-
-			private JMenu fileMenu;
-			private JMenuItem menuItem, exitMenuItem;
-
-			public MainMenuBar() {
-
-				fileMenu = new JMenu("Plik");
-				fileMenu.setMnemonic(KeyEvent.VK_P);
-
-				menuItem = new JMenuItem("An item", KeyEvent.VK_T);
-				menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
-				fileMenu.add(menuItem);
-
-				fileMenu.addSeparator();
-
-				exitMenuItem = new JMenuItem("Wyjœcie", KeyEvent.VK_F4);
-				exitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
-				AzBasicEvent.performDialogExitFromButton(mainFrame, exitMenuItem);
-				fileMenu.add(exitMenuItem);
-
-				add(fileMenu);
-			}
-		}
-		MainMenuBar mainMenuBar = new MainMenuBar();
-		mainFrame.setJMenuBar(mainMenuBar);
-		// MAIN MENU END
-
 		// OUTPUT TABLE PANE START
 		class TablePane extends JPanel {
 
@@ -376,27 +346,60 @@ public class TestFunkcji {
 		// OUTPUT CRITICAL PATH START
 		class PathPane extends JPanel {
 			
-			public PathPane() {
-				
+			private JTextArea outputField;
+			
+			public PathPane() {	
 				setBounds(0, 600, 750, 100);
 				setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));	
 				setBorder(BorderFactory.createTitledBorder("Lista œcie¿ek krytycznych"));
+				outputField = new JTextArea();
+				outputField.setEditable(false);
+				add(outputField);
 			}
 			
 			public void displayPaths() {
+				String displayString = "";
 				for (String s : activityTableModel.getCryticalPathsList()) {
-					add(new JLabel(s));
+					displayString += s+"\r\n";
 				}
 				
-				add(new JLabel("testowe"));
-				repaint();
+				outputField.setText(displayString);
 			}
 		}
 		PathPane pathPane = new PathPane();       
 		mainFrame.add(pathPane);
 		// OUTPUT CRITICAL PATH END
 
-		inputPane.getAddingActionButton().addActionListener(e -> tablePane.addActionFromInputPane(inputPane));
+		// MAIN MENU BAR START
+		class MainMenuBar extends JMenuBar {
+
+			private JMenu fileMenu;
+			private JMenuItem menuItem, exitMenuItem;
+
+			public MainMenuBar() {
+
+				fileMenu = new JMenu("Plik");
+				fileMenu.setMnemonic(KeyEvent.VK_P);
+
+				menuItem = new JMenuItem("An item", KeyEvent.VK_T);
+				menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_1, ActionEvent.ALT_MASK));
+				fileMenu.add(menuItem);
+
+				fileMenu.addSeparator();
+
+				exitMenuItem = new JMenuItem("Wyjœcie", KeyEvent.VK_F4);
+				exitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK));
+				AzBasicEvent.performDialogExitFromButton(mainFrame, exitMenuItem);
+				fileMenu.add(exitMenuItem);
+
+				add(fileMenu);
+			}
+		}
+		MainMenuBar mainMenuBar = new MainMenuBar();
+		mainFrame.setJMenuBar(mainMenuBar);
+		// MAIN MENU END
+
+	//	inputPane.getAddingActionButton().addActionListener(e -> tablePane.addActionFromInputPane(inputPane));
 		
 		resetButton.addActionListener(e -> activityTableModel.clear());
 		getPathsButton.addActionListener(e -> activityTableModel.getCryticalPathsList());
