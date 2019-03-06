@@ -399,7 +399,7 @@ public class TestFunkcji {
 		mainFrame.setJMenuBar(mainMenuBar);
 		// MAIN MENU END
 
-	//	inputPane.getAddingActionButton().addActionListener(e -> tablePane.addActionFromInputPane(inputPane));
+		inputPane.getAddingActionButton().addActionListener(e -> tablePane.addActionFromInputPane(inputPane));
 		
 		resetButton.addActionListener(e -> activityTableModel.clear());
 		getPathsButton.addActionListener(e -> activityTableModel.getCryticalPathsList());
