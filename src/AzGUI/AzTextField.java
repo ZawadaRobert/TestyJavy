@@ -15,29 +15,27 @@ import javax.swing.text.Document;
 public class AzTextField extends JTextField implements DocumentListener {
 
 	private Document document;
-	private String ghostText;
-	private JLabel label;
+	private JLabel ghostLabel;
 	
 	public void setGhostText(String ghostText) {
-		this.ghostText=ghostText;
 		
 		document = getDocument();
 		document.addDocumentListener(this);
 		
-		label = new JLabel();
-		label.setText(this.ghostText);
-		label.setForeground(Color.GRAY);
+		ghostLabel = new JLabel();
+		ghostLabel.setText(ghostText);
+		ghostLabel.setForeground(Color.GRAY);
 		
 		setLayout(new BorderLayout());
-		add(label);
+		add(ghostLabel);
 	}
 	
 	private void checkForPrompt() {
 		if (document.getLength() > 0) {
-			label.setVisible(false);
+			ghostLabel.setVisible(false);
 			return;
 		}
-		else label.setVisible(true);
+		else ghostLabel.setVisible(true);
 	}
 	
 	public void setDefaultText(String text) {

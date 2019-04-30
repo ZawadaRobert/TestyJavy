@@ -16,18 +16,26 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.BoxLayout;
+import javax.swing.JScrollPane;
+import java.awt.FlowLayout;
 
 public class TestFunkcji {
 
 	private JFrame frame;
 	private JTable table;
 	private JButton btnNewButton;
-	private JPanel panel;
+	private JButton btnDodajWiersz;
+	private JButton btnDodajKolumne;
+	private JButton btnUsunKolumne;
+	private JPanel mainPane;
+	private JScrollPane scrollPane;
 	private JTextField textField_3;
 	private JTextField textField_1;
 	private JTextField textField_2;
 	private JTextField textField_output;
 	private JPanel panel_1;
+	private JPanel northPane;
+	private JTextField columnNameField;
 
 	/**
 	 * Launch the application.
@@ -44,14 +52,14 @@ public class TestFunkcji {
 			}
 		});
 	}
-
+	
 	/**
 	 * Create the application.
 	 */
 	public TestFunkcji() {
 		initialize();
 	}
-
+	
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -60,70 +68,84 @@ public class TestFunkcji {
 		frame.setBounds(100, 100, 775, 520);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
+		String data[][] = null;
+		
+		String[] header = {"Wymiar", "Próbka 1", "Próbka 2"};
+		
+		DefaultTableModel model = new DefaultTableModel(data,header);
+		frame.getContentPane().setLayout(new BorderLayout(0, 0));
+		
+		mainPane = new JPanel();
+		frame.getContentPane().add(mainPane);
+		mainPane.setLayout(new BorderLayout(0, 0));
+		
+		panel_1 = new JPanel();
+		mainPane.add(panel_1, BorderLayout.SOUTH);
+		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
+		
+		textField_2 = new JTextField();
+		textField_2.setColumns(10);
+		defaultTo(textField_2,"0");
+		((AbstractDocument) textField_2.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.]"));
+		panel_1.add(textField_2);
+		
+		textField_3 = new JTextField();
+		textField_3.setColumns(10);
+		defaultTo(textField_3,"0");
+		((AbstractDocument) textField_3.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.]"));
+		panel_1.add(textField_3);
+		
+		textField_1 = new JTextField();
+		textField_1.setColumns(10);
+		defaultTo(textField_1,"0");
+		((AbstractDocument) textField_1.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.]"));
+		panel_1.add(textField_1);
+		
+		textField_output = new JTextField();
+		panel_1.add(textField_output);
+		textField_output.setColumns(10);
+		
+		northPane = new JPanel();
+		mainPane.add(northPane, BorderLayout.NORTH);
+		northPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		btnDodajWiersz = new JButton("Dodaj wiersz");
+		btnDodajWiersz.addActionListener(e -> model.addRow(new String[]{}));
+		northPane.add(btnDodajWiersz);
+		
+		btnDodajKolumne = new JButton("Dodaj kolumnê");
+		btnDodajKolumne.addActionListener(e -> {
+			model.addColumn(columnNameField.getText());
+			defaultTo(columnNameField,"Próbka "+model.getColumnCount());
+		});
+		
+		columnNameField = new JTextField();
+		northPane.add(columnNameField);
+		columnNameField.setColumns(10);
+		defaultTo(columnNameField,"Próbka "+model.getColumnCount());
+		northPane.add(btnDodajKolumne);
+		
+		btnUsunKolumne = new JButton("Usuñ kolumnê");
+		btnUsunKolumne.addActionListener(e -> {
+			if (model.getColumnCount()>1)
+				model.setColumnCount(model.getColumnCount()-1);
+				defaultTo(columnNameField,"Próbka "+model.getColumnCount());
+		});
+		northPane.add(btnUsunKolumne);
+		
+		btnNewButton = new JButton("Dodaj");
+		northPane.add(btnNewButton);
+		btnNewButton.addActionListener(e -> addCharacteristic());
+		
 		table = new JTable();
 		table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		table.setCellSelectionEnabled(true);
 		table.setColumnSelectionAllowed(true);
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-				{null, null, null, null, null},
-			},
-			new String[] {
-				"Wymiar", "Próbka 1", "Próbka 2", "Próbka 3", "Próbka 4"
-			}
-		));
+		table.setModel(model);
 		
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		
-		frame.getContentPane().add(table, BorderLayout.SOUTH);
-		
-		JButton btnDodajWiersz = new JButton("Dodaj wiersz");
-		btnDodajWiersz.addActionListener(e -> model.addRow(new String[]{}));
-		frame.getContentPane().add(btnDodajWiersz, BorderLayout.NORTH);
-		
-		btnNewButton = new JButton("Dodaj");
-		btnNewButton.addActionListener(e -> addCharacteristic());
-		frame.getContentPane().add(btnNewButton, BorderLayout.WEST);
-		
-		panel = new JPanel();
-		frame.getContentPane().add(panel, BorderLayout.EAST);
-		panel.setLayout(new BorderLayout(0, 0));
-		
-		textField_1 = new JTextField();
-		panel.add(textField_1, BorderLayout.CENTER);
-		textField_1.setColumns(10);
-		defaultTo(textField_1,"0");
-		((AbstractDocument) textField_1.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.]"));
-		
-		panel_1 = new JPanel();
-		panel.add(panel_1, BorderLayout.EAST);
-		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
-		
-		textField_2 = new JTextField();
-		panel_1.add(textField_2);
-		textField_2.setColumns(10);
-		defaultTo(textField_2,"0");
-		((AbstractDocument) textField_2.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.]"));
-		
-		textField_3 = new JTextField();
-		panel_1.add(textField_3);
-		textField_3.setColumns(10);
-		defaultTo(textField_3,"0");
+		scrollPane = new JScrollPane(table);
+		mainPane.add(scrollPane, BorderLayout.CENTER);
 		((AbstractDocument) textField_3.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.]"));
-		
-		textField_output = new JTextField();
-		frame.getContentPane().add(textField_output, BorderLayout.CENTER);
-		textField_output.setColumns(10);
 		
 	}
 	
@@ -136,7 +158,6 @@ public class TestFunkcji {
 					field.setText("");
 				}
 			}
-			
 			public void focusLost(FocusEvent focusEvent) {
 				if (field.getText().equals("")) {
 					field.setText(text);
