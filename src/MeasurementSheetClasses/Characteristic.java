@@ -1,4 +1,6 @@
+package MeasurementSheetClasses;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 public class Characteristic {
 	private BigDecimal value;
@@ -21,8 +23,9 @@ public class Characteristic {
 		}
 		setPrefix("");
 		setSuffix("");
-		calculateToleranceLimits();
 	}
+	
+	
 	
 	public Characteristic(BigDecimal value, BigDecimal deviation1) {
 		this.value=value;
@@ -36,7 +39,6 @@ public class Characteristic {
 		}
 		setPrefix("");
 		setSuffix("");
-		calculateToleranceLimits();
 	}
 	
 	public Characteristic(BigDecimal value) {
@@ -45,21 +47,14 @@ public class Characteristic {
 		this.deviation2=BigDecimal.ZERO;
 		setPrefix("");
 		setSuffix("");
-		calculateToleranceLimits();
 	}
-	
-	public void calculateToleranceLimits() {
-		this.upToleranceLimit = value.add(deviation1);
-		this.lowToleranceLimit = value.add(deviation2);
-	}
-	
+
 	public BigDecimal getValue() {
 		return value;
 	}
 
 	public void setValue(BigDecimal value) {
 		this.value = value;
-		calculateToleranceLimits();
 	}
 
 	public BigDecimal getDeviation1() {
@@ -73,7 +68,6 @@ public class Characteristic {
 		}
 		else
 			this.deviation1=deviation1;
-		calculateToleranceLimits();
 	}
 
 	public BigDecimal getDeviation2() {
@@ -87,13 +81,12 @@ public class Characteristic {
 		}
 		else
 			this.deviation2=deviation2;
-		calculateToleranceLimits();
 	}
 
 	@Override
 	public String toString() {
-		return "Characteristic [value=" + prefix + value + suffix + ", dev1=" + deviation1 + ", dev2=" + deviation2
-				+ ", " + lowToleranceLimit + "–" + upToleranceLimit + "]";
+		DecimalFormat fmt = new DecimalFormat("+#,##0.00;-#");
+		return "" + prefix + value + suffix + " " + fmt.format(deviation1) + " " + fmt.format(deviation2);
 	}
 
 	public String getPrefix() {
@@ -112,12 +105,12 @@ public class Characteristic {
 		this.suffix = suffix;
 	}
 
-	public BigDecimal getUpToleranceLimit() {
-		return upToleranceLimit;
+	public BigDecimal getUpTol() {
+		return value.add(deviation1);
 	}
 
-	public BigDecimal getLowToleranceLimit() {
-		return lowToleranceLimit;
+	public BigDecimal getLowTol() {
+		return value.add(deviation2);
 	}
 
 }

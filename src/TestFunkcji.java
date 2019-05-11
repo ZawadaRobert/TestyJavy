@@ -1,42 +1,30 @@
-import java.awt.EventQueue;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import javax.swing.JFrame;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
+import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 
-import AzGUI.AzTextField;
 import AzGUI.CharacterFilter;
-
-import java.math.BigDecimal;
-import javax.swing.ListSelectionModel;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.AbstractCellEditor;
-import javax.swing.BoxLayout;
-import javax.swing.JScrollPane;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import MeasurementSheetClasses.Characteristic;
+import MeasurementSheetClasses.MeasurementsSeries;
+import MeasurementSheetClasses.MeasurementsTableModel;
 
 public class TestFunkcji {
 
 	private JFrame frame;
 	private JTable table;
 	private JButton btnNewButton;
-	private JButton btnDodajWiersz;
 	private JButton btnDodajKolumne;
 	private JButton btnUsunKolumne;
 	private JPanel mainPane;
@@ -51,8 +39,10 @@ public class TestFunkcji {
 	private JPanel westPane;
 	private JPanel devPane;
 	
-	private DefaultTableModel model; 
+	private MeasurementsTableModel model;
+	//private DefaultTableModel model;
 
+	
 	/**
 	 * Launch the application.
 	 */
@@ -84,17 +74,11 @@ public class TestFunkcji {
 		frame.setBounds(100, 100, 775, 520);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
-		String data[][] = null;
-		String[] header = {"Wymiar", "Próbka 1", "Próbka 2"};
-		
-		model = new DefaultTableModel(data, header)  {
-			public boolean isCellEditable(int row, int column) {
-				if (column==0)
-					return false;
-				else
-					return true;
-			}
-		};
+		//Przyk³adowy wpis do testu
+		ArrayList<MeasurementsSeries> myList = new ArrayList<MeasurementsSeries>();
+		Characteristic test1 = new Characteristic(new BigDecimal(10), new BigDecimal(1), new BigDecimal(-1));
+		myList.add(new MeasurementsSeries(test1));
+		model = new MeasurementsTableModel(myList);
 		
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
 		
@@ -114,27 +98,23 @@ public class TestFunkcji {
 		mainPane.add(northPane, BorderLayout.NORTH);
 		northPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		btnDodajWiersz = new JButton("Dodaj wiersz");
-		btnDodajWiersz.addActionListener(e -> model.addRow(new String[]{}));
-		northPane.add(btnDodajWiersz);
-		
 		btnDodajKolumne = new JButton("Dodaj kolumnê");
 		btnDodajKolumne.addActionListener(e -> {
 			model.addColumn(columnNameField.getText());
-			defaultTo(columnNameField,"Próbka "+model.getColumnCount());
+			defaultTo(columnNameField,"Próbka "+Integer.sum(model.getColumnCount(),-3));
 		});
 		
 		columnNameField = new JTextField();
 		northPane.add(columnNameField);
 		columnNameField.setColumns(10);
-		defaultTo(columnNameField,"Próbka "+model.getColumnCount());
+		defaultTo(columnNameField,"Próbka "+Integer.sum(model.getColumnCount(),-3));
 		northPane.add(btnDodajKolumne);
 		
 		btnUsunKolumne = new JButton("Usuñ kolumnê");
 		btnUsunKolumne.addActionListener(e -> {
-			if (model.getColumnCount()>1)
-				model.setColumnCount(model.getColumnCount()-1);
-				defaultTo(columnNameField,"Próbka "+model.getColumnCount());
+			if (model.getColumnCount()>4)
+		//a		model.setColumnCount(model.getColumnCount()-1);
+			defaultTo(columnNameField,"Próbka "+Integer.sum(model.getColumnCount(),-3));
 		});
 		northPane.add(btnUsunKolumne);
 		
@@ -142,31 +122,13 @@ public class TestFunkcji {
 		northPane.add(btnNewButton);
 		btnNewButton.addActionListener(e -> addCharacteristic());
 		
-		final CustomCellRenderer rendererDefault = new CustomCellRenderer(Color.BLACK, Color.WHITE);
-		final CustomCellRenderer rendererRedFont = new CustomCellRenderer(Color.RED, Color.WHITE);
-		
 		table = new JTable() {
-			@Override
-			public TableCellRenderer getCellRenderer(int row, int column) {
-				
-				String text = (String) model.getValueAt(row, column);
-		//		System.out.println(""+row+" "+column+": "+text);;
-				
-				if (text==null)
-					return rendererDefault;
-				else {
-					try {
-						int value = Integer.parseInt(text);
-						if (value==1050)
-							return rendererRedFont;
-						else
-							return rendererDefault;
-					} catch (NumberFormatException e) {
-						return rendererDefault;
-					}
-				}
-			}
-		};;
+			
+			//Ustawienie renderowania tabeli
+			final CustomCellRenderer rendererDefault = new CustomCellRenderer(Color.BLACK, Color.WHITE);
+			final CustomCellRenderer rendererRedFont = new CustomCellRenderer(Color.RED, Color.WHITE);
+		};
+		
 		table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		table.setCellSelectionEnabled(true);
 		table.setColumnSelectionAllowed(true);
@@ -206,7 +168,7 @@ public class TestFunkcji {
 		((AbstractDocument) dev2Field.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.-]"));
 	}
 	
-	//Próba filtrowania wprowadzania do tabeli
+	//Filtr wprowadzania do tabeli
 	public class CustomCellEditor extends AbstractCellEditor implements TableCellEditor {
 		
 		JTextField component = new JTextField();
@@ -230,9 +192,6 @@ public class TestFunkcji {
 		public CustomCellRenderer(Color foreground, Color background) {
 			this.foreground = foreground;
 			this.background = background;
-		}
-		
-		public CustomCellRenderer() {
 		}
 		
 		public Color getForeground() {
@@ -277,12 +236,12 @@ public class TestFunkcji {
 	}
 	
 	public void addCharacteristic() {
-		Characteristic temp = new Characteristic(new BigDecimal(valueField.getText()),
-												new BigDecimal(dev1Field.getText()),
-												new BigDecimal(dev2Field.getText()));
-		temp.setSuffix("\u2300");
-		textField_output.setText(temp.toString());
-		System.out.println(temp);
+		Characteristic characteristic = new Characteristic(new BigDecimal(valueField.getText()),
+														new BigDecimal(dev1Field.getText()),
+														new BigDecimal(dev2Field.getText()));
+		characteristic.setSuffix("\u2300");
+		
+		model.addRow(characteristic);
 	}
 
 }
