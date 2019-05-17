@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 
@@ -40,8 +41,6 @@ public class TestFunkcji {
 	private JPanel devPane;
 	
 	private MeasurementsTableModel model;
-	//private DefaultTableModel model;
-
 	
 	/**
 	 * Launch the application.
@@ -76,8 +75,22 @@ public class TestFunkcji {
 		
 		//Przyk³adowy wpis do testu
 		ArrayList<MeasurementsSeries> myList = new ArrayList<MeasurementsSeries>();
+		
 		Characteristic test1 = new Characteristic(new BigDecimal(10), new BigDecimal(1), new BigDecimal(-1));
-		myList.add(new MeasurementsSeries(test1));
+		MeasurementsSeries series1 = new MeasurementsSeries(test1);
+		series1.addMeasurement(new BigDecimal(9));
+		series1.addMeasurement(new BigDecimal(2));
+		series1.addMeasurement(new BigDecimal(3));
+		myList.add(series1);
+		
+		Characteristic test2 = new Characteristic(new BigDecimal(30), new BigDecimal(3), new BigDecimal(-3));
+		MeasurementsSeries series2 = new MeasurementsSeries(test2);
+		series2.addMeasurement(new BigDecimal(30));
+		series2.addMeasurement(new BigDecimal(29));
+		series2.addMeasurement(new BigDecimal(27));
+		myList.add(series2);
+		
+		
 		model = new MeasurementsTableModel(myList);
 		
 		frame.getContentPane().setLayout(new BorderLayout(0, 0));
@@ -113,7 +126,7 @@ public class TestFunkcji {
 		btnUsunKolumne = new JButton("Usuñ kolumnê");
 		btnUsunKolumne.addActionListener(e -> {
 			if (model.getColumnCount()>4)
-		//a		model.setColumnCount(model.getColumnCount()-1);
+				model.removeColumn(model.getColumnCount()-1);
 			defaultTo(columnNameField,"Próbka "+Integer.sum(model.getColumnCount(),-3));
 		});
 		northPane.add(btnUsunKolumne);
@@ -123,10 +136,13 @@ public class TestFunkcji {
 		btnNewButton.addActionListener(e -> addCharacteristic());
 		
 		table = new JTable() {
-			
 			//Ustawienie renderowania tabeli
-			final CustomCellRenderer rendererDefault = new CustomCellRenderer(Color.BLACK, Color.WHITE);
-			final CustomCellRenderer rendererRedFont = new CustomCellRenderer(Color.RED, Color.WHITE);
+			final CustomCellRenderer rendererRedFont = new CustomCellRenderer();
+			
+			@Override
+			public TableCellRenderer getCellRenderer(int row, int column) {
+				return rendererRedFont;
+			}
 		};
 		
 		table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -134,7 +150,7 @@ public class TestFunkcji {
 		table.setColumnSelectionAllowed(true);
 		table.setModel(model);
 		
-		//
+		
 		TableColumn col = table.getColumnModel().getColumn(1);
 		col.setCellEditor(new CustomCellEditor());
 		
@@ -186,39 +202,27 @@ public class TestFunkcji {
 	}
 	
 	class CustomCellRenderer extends DefaultTableCellRenderer {
-		private Color foreground;
-		private Color background;
 		
-		public CustomCellRenderer(Color foreground, Color background) {
-			this.foreground = foreground;
-			this.background = background;
-		}
-		
-		public Color getForeground() {
-			return foreground;
-		}
-
-		public void setForeground(Color foreground) {
-			this.foreground = foreground;
-		}
-
-		public Color getBackground() {
-			return background;
-		}
-
-		public void setBackground(Color background) {
-			this.background = background;
-		}
-
+		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-				Component rendererComp = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-				rendererComp.setForeground(foreground);
-				rendererComp.setBackground(background);
-				return rendererComp ;
+			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+			BigDecimal lowTol= (BigDecimal)table.getValueAt(row, 2);
+			BigDecimal upTol= (BigDecimal)table.getValueAt(row, 3);
+			if (value instanceof BigDecimal&&column>=4) {
+				boolean cond1 = ((BigDecimal)value).compareTo(lowTol)<0;
+				boolean cond2 = ((BigDecimal)value).compareTo(upTol)>0;
+				if(cond1||cond2) {
+					setForeground(Color.RED);
+				} else {
+					setForeground(Color.BLUE);
+				}
+			} else {
+				setForeground(Color.BLACK);
+			}
+			return this;
 		}
 	}
 	
-	//Jeszcze nie dzia³a
 	public void defaultTo(JTextField field, String text) {
 		field.setText(text);
 		field.addFocusListener(new FocusListener() {

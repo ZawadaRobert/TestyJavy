@@ -6,8 +6,6 @@ public class Characteristic {
 	private BigDecimal value;
 	private BigDecimal deviation1;
 	private BigDecimal deviation2;
-	private BigDecimal upToleranceLimit;
-	private BigDecimal lowToleranceLimit;
 	private String prefix;
 	private String suffix;
 	

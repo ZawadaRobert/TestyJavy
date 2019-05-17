@@ -12,12 +12,20 @@ public class MeasurementsSeries {
 		measurements= new ArrayList<BigDecimal>();
 	}
 	
-	public void addMeasurements(BigDecimal measurements) {
-		measurements.add(measurements);
+	public void addMeasurement(BigDecimal measurement) {
+		measurements.add(measurement);
+	}
+	public void removeLastMeasurement() {
+		if(measurements.size()>0)
+			measurements.remove(measurements.size()-1);
 	}
 	
-	public BigDecimal getMeasurements(int i) {
-		return measurements.get(1);
+	public void setMeasurement(int pos, BigDecimal measurement) {
+		measurements.set(pos, measurement);
+	}
+	
+	public BigDecimal getMeasurements(int measurement) {
+		return measurements.get(measurement);
 	}
 	
 	public Characteristic getCharacteristic() {

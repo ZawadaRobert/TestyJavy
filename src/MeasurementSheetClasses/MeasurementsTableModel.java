@@ -27,24 +27,19 @@ public class MeasurementsTableModel extends AbstractTableModel {
 		return size;
 	}
 	
-	public Object getValueAt(int row, int col) {
+	public Object getValueAt(int row, int column) {
 		Object temp = null;
-		if (col == 0)
+		if (column == 0)
 			temp = row+1;
-		else if (col == 1)
+		else if (column == 1)
 			temp = data.get(row).getCharacteristic();
-		else if (col == 2)
+		else if (column == 2)
 			temp = data.get(row).getCharacteristic().getLowTol();
-		else if (col == 3)
+		else if (column == 3)
 			temp = data.get(row).getCharacteristic().getUpTol();
-		else if (col == 4)
-			temp = data.get(row).getCharacteristic().getLowTol();
-		else if (col == 5)
-			temp = data.get(row).getCharacteristic().getUpTol();
-		else if (col == 6)
-			temp = data.get(row).getCharacteristic().toString();
 		else
-			return "null";
+			temp = data.get(row).getMeasurements(column-4);
+			//temp = null;
 		return temp;
 	}
 	
@@ -56,13 +51,31 @@ public class MeasurementsTableModel extends AbstractTableModel {
 	}
 	
 	public void addRow(Characteristic characteristic) {
-		data.add(new MeasurementsSeries(characteristic));
+		MeasurementsSeries series = new MeasurementsSeries(characteristic);
+		for (int i=0; i<getColumnCount()-4; i++)
+			series.addMeasurement(null);
+		data.add(series);
 		fireTableRowsInserted(1,0);
 	}
 	
 	public void addColumn(String header) {
+		for (MeasurementsSeries series : data)
+			series.addMeasurement(null);
 		headers.add(header);
 		fireTableStructureChanged();
+	}
+	
+	public void removeColumn(int column) {
+		for (MeasurementsSeries series : data)
+			series.removeLastMeasurement();
+		headers.remove(column);
+		fireTableStructureChanged();
+	}
+	
+	// Overide SetValue vy edit?
+	public void setValueAt(Object value, int row, int column) {
+		if (column>=2)
+			data.get(row).setMeasurement(column-4,new BigDecimal(value.toString()));
 	}
 	
 	public String getColumnName(int col) {
