@@ -1,8 +1,10 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -13,13 +15,14 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 
 import AzGUI.CharacterFilter;
 import MeasurementSheetClasses.Characteristic;
+import MeasurementSheetClasses.CharacteristicSmallPane;
 import MeasurementSheetClasses.MeasurementsSeries;
 import MeasurementSheetClasses.MeasurementsTableModel;
+
 
 public class TestFunkcji {
 
@@ -39,8 +42,9 @@ public class TestFunkcji {
 	private JTextField columnNameField;
 	private JPanel westPane;
 	private JPanel devPane;
-	
 	private MeasurementsTableModel model;
+	private JPanel valuePane;
+	private JComboBox<String> comboBox;
 	
 	/**
 	 * Launch the application.
@@ -83,13 +87,19 @@ public class TestFunkcji {
 		series1.addMeasurement(new BigDecimal(3));
 		myList.add(series1);
 		
-		Characteristic test2 = new Characteristic(new BigDecimal(30), new BigDecimal(3), new BigDecimal(-3));
+		Characteristic test2 = new Characteristic(new BigDecimal(30), new BigDecimal(11), new BigDecimal(-3));
 		MeasurementsSeries series2 = new MeasurementsSeries(test2);
 		series2.addMeasurement(new BigDecimal(30));
 		series2.addMeasurement(new BigDecimal(29));
 		series2.addMeasurement(new BigDecimal(27));
 		myList.add(series2);
 		
+		Characteristic test3 = new Characteristic(new BigDecimal(30), new BigDecimal(14));
+		MeasurementsSeries series3 = new MeasurementsSeries(test3);
+		series3.addMeasurement(new BigDecimal(30));
+		series3.addMeasurement(new BigDecimal(29));
+		series3.addMeasurement(new BigDecimal(27));
+		myList.add(series3);
 		
 		model = new MeasurementsTableModel(myList);
 		
@@ -137,6 +147,7 @@ public class TestFunkcji {
 		
 		table = new JTable() {
 			//Ustawienie renderowania tabeli
+			
 			final CustomCellRenderer rendererRedFont = new CustomCellRenderer();
 			
 			@Override
@@ -146,25 +157,31 @@ public class TestFunkcji {
 		};
 		
 		table.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		table.setRowHeight(20);
 		table.setCellSelectionEnabled(true);
 		table.setColumnSelectionAllowed(true);
 		table.setModel(model);
-		
-		
-		TableColumn col = table.getColumnModel().getColumn(1);
-		col.setCellEditor(new CustomCellEditor());
 		
 		scrollPane = new JScrollPane(table);
 		mainPane.add(scrollPane, BorderLayout.CENTER);
 		
 		westPane = new JPanel();
 		mainPane.add(westPane, BorderLayout.WEST);
+		westPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		
+		valuePane = new JPanel();
+		westPane.add(valuePane);
+		valuePane.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		valueField = new JTextField();
+		valuePane.add(valueField);
 		valueField.setColumns(6);
 		defaultTo(valueField,"0");
-		westPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		westPane.add(valueField);
+		((AbstractDocument) valueField.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.-]"));
+		
+		comboBox = new JComboBox<String>();
+		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"", "\u00B0", "\u2300", "R", "\u2610", "\u2221\u2086"}));
+		valuePane.add(comboBox);
 		
 		devPane = new JPanel();
 		westPane.add(devPane);
@@ -174,14 +191,14 @@ public class TestFunkcji {
 		devPane.add(dev1Field);
 		dev1Field.setColumns(6);
 		defaultTo(dev1Field,"0");
+		((AbstractDocument) dev1Field.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.-]"));
 		
 		dev2Field = new JTextField();
 		devPane.add(dev2Field);
 		dev2Field.setColumns(6);
 		defaultTo(dev2Field,"0");
-		((AbstractDocument) valueField.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.-]"));
-		((AbstractDocument) dev1Field.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.-]"));
 		((AbstractDocument) dev2Field.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.-]"));
+		
 	}
 	
 	//Filtr wprowadzania do tabeli
@@ -190,7 +207,6 @@ public class TestFunkcji {
 		JTextField component = new JTextField();
 		
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int rowIndex, int vColIndex) {
-			
 			((AbstractDocument) component.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.-]"));
 			component.setText((String) value);
 			return component;
@@ -204,11 +220,18 @@ public class TestFunkcji {
 	class CustomCellRenderer extends DefaultTableCellRenderer {
 		
 		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+														boolean hasFocus, int row, int column) {
 			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 			BigDecimal lowTol= (BigDecimal)table.getValueAt(row, 2);
 			BigDecimal upTol= (BigDecimal)table.getValueAt(row, 3);
-			if (value instanceof BigDecimal&&column>=4) {
+			
+			if (value instanceof Characteristic&&column==1) {
+				Characteristic characteristic = (Characteristic) value;
+				CharacteristicSmallPane cellPane = new CharacteristicSmallPane(characteristic);
+				return cellPane;
+			}
+			else if (value instanceof BigDecimal&&column>=4) {
 				boolean cond1 = ((BigDecimal)value).compareTo(lowTol)<0;
 				boolean cond2 = ((BigDecimal)value).compareTo(upTol)>0;
 				if(cond1||cond2) {
@@ -216,7 +239,8 @@ public class TestFunkcji {
 				} else {
 					setForeground(Color.BLUE);
 				}
-			} else {
+			}
+			else{
 				setForeground(Color.BLACK);
 			}
 			return this;
@@ -241,11 +265,16 @@ public class TestFunkcji {
 	
 	public void addCharacteristic() {
 		Characteristic characteristic = new Characteristic(new BigDecimal(valueField.getText()),
-														new BigDecimal(dev1Field.getText()),
-														new BigDecimal(dev2Field.getText()));
-		characteristic.setSuffix("\u2300");
+														   new BigDecimal(dev1Field.getText()),
+														   new BigDecimal(dev2Field.getText()));
+		String selected = comboBox.getSelectedItem().toString();
+		
+		if (selected=="");
+		else if (selected=="°")
+			characteristic.setSuffix(selected);
+		else
+			characteristic.setPrefix(selected);
 		
 		model.addRow(characteristic);
 	}
-
 }

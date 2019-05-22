@@ -2,6 +2,7 @@ package MeasurementSheetClasses;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import javax.swing.table.AbstractTableModel;
 
 public class MeasurementsTableModel extends AbstractTableModel { 
@@ -39,7 +40,6 @@ public class MeasurementsTableModel extends AbstractTableModel {
 			temp = data.get(row).getCharacteristic().getUpTol();
 		else
 			temp = data.get(row).getMeasurements(column-4);
-			//temp = null;
 		return temp;
 	}
 	
@@ -75,7 +75,7 @@ public class MeasurementsTableModel extends AbstractTableModel {
 	// Overide SetValue vy edit?
 	public void setValueAt(Object value, int row, int column) {
 		if (column>=2)
-			data.get(row).setMeasurement(column-4,new BigDecimal(value.toString()));
+			data.get(row).setMeasurement(column-4, new BigDecimal(value.toString()));
 	}
 	
 	public String getColumnName(int col) {
@@ -91,4 +91,5 @@ public class MeasurementsTableModel extends AbstractTableModel {
 			return BigDecimal.class;
 		}
 	}
+
 }

@@ -23,18 +23,10 @@ public class Characteristic {
 		setSuffix("");
 	}
 	
-	
-	
 	public Characteristic(BigDecimal value, BigDecimal deviation1) {
 		this.value=value;
-		if (deviation1.compareTo(deviation2) < 0) {
-			this.deviation2=deviation1;
-			this.deviation1=BigDecimal.ZERO;
-		}
-		else {
-			this.deviation1=deviation1;
-			this.deviation2=BigDecimal.ZERO;
-		}
+		this.deviation1=deviation1;
+		this.deviation2=BigDecimal.ZERO;
 		setPrefix("");
 		setSuffix("");
 	}
