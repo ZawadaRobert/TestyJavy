@@ -1,9 +1,11 @@
 package MeasurementSheetClasses;
+import java.awt.Component;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
 
 public class MeasurementsTableModel extends AbstractTableModel { 
 	private ArrayList<String> headers = new ArrayList<String>( 

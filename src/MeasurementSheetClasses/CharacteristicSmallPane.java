@@ -1,5 +1,6 @@
 package MeasurementSheetClasses;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -36,7 +37,6 @@ public class CharacteristicSmallPane extends JPanel {
 		valueField.setFont(regularFont);
 		
 		innerPane = new JPanel();
-		innerPane.setPreferredSize(new Dimension(35, 0));
 		innerPane.setLayout(new GridLayout(0, 1));
 		add(innerPane);
 		
@@ -44,31 +44,39 @@ public class CharacteristicSmallPane extends JPanel {
 		BigDecimal dev2 = characteristic.getDeviation2();
 		
 		if (dev2.compareTo(BigDecimal.ZERO)==0) {
-			dev2Field = new JTextField();
-			dev2Field.setText(fmt.format(dev1));
-			dev2Field.setBorder(BorderFactory.createEmptyBorder());
-			dev2Field.setFont(smallFont);
-			innerPane.add(dev2Field);
-		}
-		else if (dev1.add(dev2).compareTo(BigDecimal.ZERO)==0) {
-			dev2Field = new JTextField();
-			dev2Field.setText(fmt2.format(dev1));
-			dev2Field.setBorder(BorderFactory.createEmptyBorder());
-			dev2Field.setFont(smallFont);
-			innerPane.add(dev2Field);
-		}
-		else {
-			dev2Field = new JTextField();
-			dev2Field.setText(fmt.format(dev1));
-			dev2Field.setBorder(BorderFactory.createEmptyBorder());
-			dev2Field.setFont(smallFont);
-			innerPane.add(dev2Field);
-			
 			dev1Field = new JTextField();
-			dev1Field.setText(fmt.format(dev2));
+			dev1Field.setText(fmt.format(dev1));
 			dev1Field.setBorder(BorderFactory.createEmptyBorder());
 			dev1Field.setFont(smallFont);
 			innerPane.add(dev1Field);
 		}
+		else if (dev1.add(dev2).compareTo(BigDecimal.ZERO)==0) {
+			dev1Field = new JTextField();
+			dev1Field.setText(fmt2.format(dev1));
+			dev1Field.setBorder(BorderFactory.createEmptyBorder());
+			dev1Field.setFont(smallFont);
+			innerPane.add(dev1Field);
+		}
+		else {
+			dev1Field = new JTextField();
+			dev1Field.setText(fmt.format(dev1));
+			dev1Field.setBorder(BorderFactory.createEmptyBorder());
+			dev1Field.setFont(smallFont);
+			innerPane.add(dev1Field);
+			
+			dev2Field = new JTextField();
+			dev2Field.setText(fmt.format(dev2));
+			dev2Field.setBorder(BorderFactory.createEmptyBorder());
+			dev2Field.setFont(smallFont);
+			innerPane.add(dev2Field);
+		}
+	}
+	
+
+	public void setColor(Color c) {
+		valueField.setBackground(c);
+		dev1Field.setBackground(c);
+		if (dev2Field!=null)
+			dev2Field.setBackground(c);
 	}
 }

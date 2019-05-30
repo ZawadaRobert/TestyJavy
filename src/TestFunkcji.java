@@ -6,6 +6,10 @@ import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.math.BigDecimal;
@@ -17,6 +21,7 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.AbstractDocument;
 
+import AzGUI.AzTextField;
 import AzGUI.CharacterFilter;
 import MeasurementSheetClasses.Characteristic;
 import MeasurementSheetClasses.CharacteristicSmallPane;
@@ -24,9 +29,10 @@ import MeasurementSheetClasses.MeasurementsSeries;
 import MeasurementSheetClasses.MeasurementsTableModel;
 
 
-public class TestFunkcji {
-
+public class TestFunkcji implements ActionListener {
+	
 	private JFrame frame;
+	private JFrame colorFrame;
 	private JTable table;
 	private JButton btnNewButton;
 	private JButton btnDodajKolumne;
@@ -45,7 +51,12 @@ public class TestFunkcji {
 	private MeasurementsTableModel model;
 	private JPanel valuePane;
 	private JComboBox<String> comboBox;
+	private JMenuBar menuBar;
+	private JMenu settingsMenu;
+	private JMenuItem colorsSettingsItem;
 	
+	static private Color oddRows = Color.WHITE;
+	static private Color evenRows = new Color (230,230,230);
 	/**
 	 * Launch the application.
 	 */
@@ -73,9 +84,11 @@ public class TestFunkcji {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 775, 520);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
 		
 		//Przyk³adowy wpis do testu
 		ArrayList<MeasurementsSeries> myList = new ArrayList<MeasurementsSeries>();
@@ -199,6 +212,29 @@ public class TestFunkcji {
 		defaultTo(dev2Field,"0");
 		((AbstractDocument) dev2Field.getDocument()).setDocumentFilter(new CharacterFilter("[^0-9.-]"));
 		
+		menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		settingsMenu = new JMenu("Ustawienia");
+		menuBar.add(settingsMenu);
+		
+		colorsSettingsItem = new JMenuItem("Ustawienia kolorów");
+		settingsMenu.add(colorsSettingsItem);
+		colorsSettingsItem.addActionListener(this);
+		
+		//Okienko wyboru kolorów - niewidoczne przy uruchomieniu
+		colorFrame = new JFrame();
+		colorFrame.setBounds(50, 50, 300, 200);
+		colorFrame.setLocationRelativeTo(frame);
+		
+	}
+	
+	public void actionPerformed(ActionEvent e) {
+		Object source = e.getSource();
+		if (source==colorsSettingsItem) {
+			colorFrame.setLocationRelativeTo(frame);
+			colorFrame.setVisible(true);
+		}
 	}
 	
 	//Filtr wprowadzania do tabeli
@@ -226,9 +262,18 @@ public class TestFunkcji {
 			BigDecimal lowTol= (BigDecimal)table.getValueAt(row, 2);
 			BigDecimal upTol= (BigDecimal)table.getValueAt(row, 3);
 			
+			if (row%2==1)
+				setBackground(oddRows);
+			else
+				setBackground(evenRows);
+			
 			if (value instanceof Characteristic&&column==1) {
 				Characteristic characteristic = (Characteristic) value;
 				CharacteristicSmallPane cellPane = new CharacteristicSmallPane(characteristic);
+				if (row%2==1)
+					cellPane.setColor(oddRows);
+				else
+					cellPane.setColor(evenRows);
 				return cellPane;
 			}
 			else if (value instanceof BigDecimal&&column>=4) {

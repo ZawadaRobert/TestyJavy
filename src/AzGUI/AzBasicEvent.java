@@ -38,12 +38,9 @@ public class AzBasicEvent {
 	}
 	
 	public static void eventDialogError(JFrame frame, String errorText) {
-
 		String message = errorText;
 		String title = "B³¹d";
 		int type = JOptionPane.ERROR_MESSAGE;
-		Icon icon = null;
-	
 		JOptionPane.showMessageDialog(frame, message, title, type);
 	}
 
